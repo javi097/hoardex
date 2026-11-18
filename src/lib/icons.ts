@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import {
   Gamepad2,
   BookOpen,
@@ -24,6 +25,7 @@ import {
   Gift,
   Puzzle,
   type LucideIcon,
+  type LucideProps,
 } from 'lucide-react';
 
 export const ICON_REGISTRY: Record<string, LucideIcon> = {
@@ -55,4 +57,12 @@ export const ICON_REGISTRY: Record<string, LucideIcon> = {
 
 export function getIcon(name: string): LucideIcon {
   return ICON_REGISTRY[name] ?? LayoutGrid;
+}
+
+export function CollectionIcon({
+  name,
+  ...props
+}: { name: string } & LucideProps) {
+  const Icon = ICON_REGISTRY[name] ?? LayoutGrid;
+  return createElement(Icon, props);
 }

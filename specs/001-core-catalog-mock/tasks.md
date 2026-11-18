@@ -69,7 +69,7 @@ Estado: pendiente
 
 ---
 
-- [ ] **T7. Componentes de dominio y páginas.** RF-06.1, RF-06.2, RF-06.2.A, RF-06.3, RF-06.3.A, RF-07
+- [x] **T7. Componentes de dominio y páginas.** RF-06.1, RF-06.2, RF-06.2.A, RF-06.3, RF-06.3.A, RF-07
   - Crear componentes de colecciones en `src/features/collections/components/`:
     - `ColorPicker.tsx`: paleta de 8–10 colores predefinidos (incluye los 6 de plantillas) + `<input type="color">` para personalizado; prop `value: string`, `onChange: (color: string) => void`.
     - `IconPicker.tsx`: grid de los 24 iconos del `ICON_REGISTRY` como botones seleccionables; prop `value: string`, `onChange: (name: string) => void`.
