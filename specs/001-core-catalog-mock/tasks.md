@@ -39,7 +39,7 @@ Estado: pendiente
 
 ---
 
-- [ ] **T4. Lógica pura de ítems y sus tests.** RF-03.2, RF-03.2.A
+- [x] **T4. Lógica pura de ítems y sus tests.** RF-03.2, RF-03.2.A
   - Crear `src/features/items/core/items.ts` con:
     - `createItemFromSearchResult(params): Item` — genera `id` con `crypto.randomUUID()`, propaga todos los campos de `SearchResult`, `xpAwarded: false`, `createdAt = updatedAt = now`.
     - `createItemManual(params): Item` — igual pero sin `externalId` y con campos manuales.
