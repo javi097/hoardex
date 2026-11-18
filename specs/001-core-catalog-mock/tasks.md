@@ -29,7 +29,7 @@ Estado: pendiente
 
 ---
 
-- [ ] **T3. Lógica pura de colecciones y sus tests.** RF-03.1, RF-03.1.A, RF-03.1.B
+- [x] **T3. Lógica pura de colecciones y sus tests.** RF-03.1, RF-03.1.A, RF-03.1.B
   - Crear `src/features/collections/core/templates.ts` con:
     - `validateStatuses(statuses: CollectionStatus[]): void` — lanza `Error` si 0 o más de 1 estado tiene `isCompleted: true`.
     - `createCollection(params: CreateCollectionParams, now: string): Collection` — llama a `validateStatuses`, genera `id` con `crypto.randomUUID()`, devuelve objeto inmutable.
