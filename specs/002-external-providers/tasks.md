@@ -44,7 +44,7 @@ Este plan de tareas desglosa la implementación de la Fase 1b (`specs/002-extern
     - Añadir banner visual accesible de error (con `AlertCircle` y rol `alert`) cuando la búsqueda falle, con botón para cambiar a "Alta manual" pre-rellenando el campo del título con la búsqueda fallida.
   - Hecho cuando: `npx tsc --noEmit`, `npm run lint` y los tests de componentes pasen sin errores.
 
-- [ ] **T7. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-05
+- [x] **T7. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-05
   - Ejecutar verificación estática completa: `npx tsc --noEmit`, `npm run lint`, `npm run test` (toda la suite) y `npm run build`. Confirmar 0 errores, 0 warnings y 0 `any`.
   - Levantar `npm run dev` y validar con Chrome DevTools MCP en `http://localhost:5173/`:
     - Búsqueda de libros en Open Library (con portadas reales).

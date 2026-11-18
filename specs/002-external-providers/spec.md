@@ -1,5 +1,5 @@
 # Spec 002 — External Search Providers
-Estado: aprobada
+Estado: implementada
 
 ---
 
@@ -224,23 +224,23 @@ export function getSearchProvider(type: ProviderType): SearchProvider
 
 La spec se considera implementada cuando:
 
-- [ ] `src/providers/rawg.ts` implementa `SearchProvider` y pasa todos sus tests con mocks en `rawg.test.ts`.
-- [ ] `src/providers/openLibrary.ts` implementa `SearchProvider` y pasa todos sus tests con mocks en `openLibrary.test.ts`.
-- [ ] `src/providers/bgg.ts` implementa `SearchProvider` y pasa todos sus tests con mocks en `bgg.test.ts`.
-- [ ] `src/providers/index.ts` resuelve correctamente los 4 tipos de proveedor (`manual`, `rawg`, `openLibrary`, `bgg`) y pasa sus tests en `index.test.ts`.
-- [ ] `.env.example` contiene la documentación de `VITE_RAWG_API_KEY` y `VITE_BGG_API_TOKEN`.
-- [ ] `vite.config.ts` incluye la configuración de proxy para `/api/bgg` en desarrollo (con reenvío de token si existe).
-- [ ] `AddItemSheet` utiliza el proveedor dinámico de la colección, debounce de 350 ms, `AbortController`, y abre "Alta manual" directamente si el proveedor es `'manual'`.
-- [ ] `npx tsc --noEmit` pasa con 0 errores y 0 `any`.
-- [ ] `npm run lint` pasa con 0 errores y 0 warnings.
-- [ ] `npm run test` ejecuta toda la suite completa (incluyendo los nuevos tests) en verde.
-- [ ] `npm run build` compila con éxito.
-- [ ] Verificación con Chrome DevTools MCP en `http://127.0.0.1:5173/`:
-  - [ ] Búsqueda de libros en Open Library (ej. "Dune" o "Cien años de soledad") devuelve resultados con carátulas reales.
-  - [ ] Búsqueda en RAWG con API key funciona; sin API key muestra mensaje informativo amigable.
-  - [ ] Búsqueda en BGG devuelve resultados de juegos de mesa mostrando el placeholder de carátula.
-  - [ ] Colección manual muestra directamente "Alta manual" sin pestaña de búsqueda.
-  - [ ] Debounce y cancelación de peticiones operan sin parpadeos.
+- [x] `src/providers/rawg.ts` implementa `SearchProvider` y pasa todos sus tests con mocks en `rawg.test.ts`.
+- [x] `src/providers/openLibrary.ts` implementa `SearchProvider` y pasa todos sus tests con mocks en `openLibrary.test.ts`.
+- [x] `src/providers/bgg.ts` implementa `SearchProvider` y pasa todos sus tests con mocks en `bgg.test.ts`.
+- [x] `src/providers/index.ts` resuelve correctamente los 4 tipos de proveedor (`manual`, `rawg`, `openLibrary`, `bgg`) y pasa sus tests en `index.test.ts`.
+- [x] `.env.example` contiene la documentación de `VITE_RAWG_API_KEY` y `VITE_BGG_API_TOKEN`.
+- [x] `vite.config.ts` incluye la configuración de proxy para `/api/bgg` en desarrollo (con reenvío de token si existe).
+- [x] `AddItemSheet` utiliza el proveedor dinámico de la colección, debounce de 350 ms, `AbortController`, y abre "Alta manual" directamente si el proveedor es `'manual'`.
+- [x] `npx tsc --noEmit` pasa con 0 errores y 0 `any`.
+- [x] `npm run lint` pasa con 0 errores y 0 warnings.
+- [x] `npm run test` ejecuta toda la suite completa (incluyendo los nuevos tests) en verde.
+- [x] `npm run build` compila con éxito.
+- [x] Verificación con Chrome DevTools MCP en `http://127.0.0.1:5173/`:
+  - [x] Búsqueda de libros en Open Library (ej. "Dune" o "Cien años de soledad") devuelve resultados con carátulas reales.
+  - [x] Búsqueda en RAWG con API key funciona; sin API key muestra mensaje informativo amigable.
+  - [x] Búsqueda en BGG devuelve resultados de juegos de mesa mostrando el placeholder de carátula.
+  - [x] Colección manual muestra directamente "Alta manual" sin pestaña de búsqueda.
+  - [x] Debounce y cancelación de peticiones operan sin parpadeos.
 
 ---
 

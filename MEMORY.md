@@ -1,33 +1,33 @@
 # MEMORY.md — Hoardex
 
 ## Estado actual
-- **Fase actual:** Fase 1a completada (`001-core-catalog-mock` implementada).
+- **Fase actual:** Fase 1b completada (`002-external-providers` implementada).
 - **Completado:**
-  - `001-core-catalog-mock`: Biblioteca base y arquitectura limpia con datos mock.
-  - Contratos globales en `src/interfaces/` sin `any`.
-  - Lógica pura determinista y testeada (`templates.ts`, `items.ts`) con 42 tests en verde.
-  - Proveedor `mockProvider` con dataset realista y simulación de latencia.
-  - Stores en Zustand con persistencia defensiva (`hoardex-collections` e `hoardex-items`) y cascada de borrado.
-  - Primitivas UI Shadcn y transversales (`Header`, `CoverImage`, `ConfirmDialog`, `EmptyState`, `Sheet`).
-  - Páginas `HomePage` y `CollectionPage` con color temático `--collection-accent` y soporte responsive/dark mode verificado con Chrome DevTools MCP.
+  - `001-core-catalog-mock`: Arquitectura base, contratos, stores Zustand, vistas y UI.
+  - `002-external-providers`: Adaptadores de búsqueda externa reales (`rawg`, `openLibrary`, `bgg`, `manual`).
+  - Funciones puras de normalización y parseo (`normalizeRawgGame`, `normalizeOpenLibraryDoc`, `parseBggXml`) con DTOs estrictos y `meta: Record<string, string | number | boolean>`.
+  - Factoría y registro dinámico `getSearchProvider(collection.provider)` con fallback a mock.
+  - Proxy `/api/bgg` en Vite para sortear CORS y soporte de token Bearer.
+  - Integración reactiva en `AddItemSheet`: debounce 350 ms, `AbortController`, banner de error accesible con botón de fallback a "Alta manual" pre-rellenada, y render directo sin pestañas para colecciones manuales.
+  - 80 tests unitarios y de componentes pasando al 100% en Vitest. Cero `any`.
 - **Hoja de ruta SDD (`specs/`):**
   - `001-core-catalog-mock` (Fase 1a: Implementada).
-  - `002-external-providers` (Fase 1b: Adaptadores RAWG, Open Library y BGG).
+  - `002-external-providers` (Fase 1b: Implementada).
   - `003-reviews-filters-sorting` (Fase 2: Notas, reseñas, búsqueda, filtros y ordenación).
   - `004-gamification-engine` (Fase 3a: Motor puro de XP idempotente, niveles y rachas + tests).
   - `005-achievements-challenges` (Fase 3b: Logros declarativos, retos personales y toasts).
   - `006-supabase-auth-sync` (Fase 4: Auth, base de datos en Supabase y perfil público).
   - `007-wrapped-stats-deploy` (Fase 5: Estadísticas anuales tipo Wrapped y despliegue).
-- **Siguiente paso:** Iniciar la spec `002-external-providers` (`sdd-spec`).
+- **Siguiente paso:** Iniciar la spec `003-reviews-filters-sorting` (`sdd-spec`).
 
 ## Decisiones de arquitectura (y su porqué)
-- **Persistencia en Zustand con claves independientes (`hoardex-collections`, `hoardex-items`):** Evita colisiones entre stores modulares y simplifica el reseteo granular.
-- **Renderizado de iconos con `<CollectionIcon />`:** Desacopla la resolución de nombres de iconos Lucide de la renderización sin generar componentes dinámicos durante el render (cumpliendo React Compiler / ESLint).
-- **Suscripciones estables con `useMemo` en Zustand:** Evitar arrays derivados o `.filter()` dentro del selector para prevenir loops infinitos en `useSyncExternalStore`.
-- **Script anti-FOUC en `<head>`:** Inyección síncrona de `.dark` en `index.html` según `localStorage` o `matchMedia` antes de la hidratación de React.
-- **`crypto.randomUUID()` puro:** Identificadores únicos sin librerías externas adicionales.
+- **Adaptadores desacoplados con funciones puras:** Aísla la normalización de datos externos de las peticiones de red, permitiendo probar exhaustivamente casos límite sin mockear red.
+- **Proxy dev server `/api/bgg`:** Resuelve la ausencia de cabeceras CORS en BGG XMLAPI2 sin requerir un backend intermediario.
+- **Cancelación con `AbortSignal`:** Cancela conexiones HTTP previas en vuelo evitando condiciones de carrera y parpadeos en búsquedas rápidas.
+- **Renderizado directo en colecciones `'manual'`:** Oculta pestañas de búsqueda en figuras/custom para eliminar fricción al usuario.
+- **Persistencia en Zustand con claves independientes (`hoardex-collections`, `hoardex-items`):** Evita colisiones entre stores modulares.
 
 ## Errores a evitar
-- **No instanciar componentes dentro del ciclo de render:** Usar referencias fijas o wrappers como `CollectionIcon`.
+- **No poner cabecera `User-Agent` en fetch de navegador:** Es cabecera prohibida en estándar Fetch.
+- **No llamar a `setState` en effects para resetear formularios:** Manejar el reseteo en handlers de apertura/cierre o `key`.
 - **No devolver arrays nuevos en selectores de Zustand:** Seleccionar el array base y derivar con `useMemo`.
-- **No duplicar XP ni alterar fechas históricas:** Mantener `item.xpAwarded || isCompleted` y conservar `completedAt` de la primera completación.
