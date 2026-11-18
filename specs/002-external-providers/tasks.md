@@ -17,7 +17,7 @@ Este plan de tareas desglosa la implementación de la Fase 1b (`specs/002-extern
   - Crear `src/providers/rawg.test.ts` cubriendo normalización pura (completo, sin imagen, sin fecha, sin plataformas), consulta HTTP con API key, errores 401/429/500 y cancelación con `signal`.
   - Hecho cuando: `npm run test src/providers/rawg.test.ts` pase al 100% y `npx tsc --noEmit` y `npm run lint` no emitan errores.
 
-- [ ] **T3. Adaptador Open Library y suite de pruebas unitarias.** RF-02.1, RF-02.2, RF-02.3, RF-02.4, RNF-01, RNF-02, RNF-03
+- [x] **T3. Adaptador Open Library y suite de pruebas unitarias.** RF-02.1, RF-02.2, RF-02.3, RF-02.4, RNF-01, RNF-02, RNF-03
   - Crear `src/providers/openLibrary.ts` con tipos DTO (`OpenLibraryDoc`, `OpenLibraryResponse`), función pura `normalizeOpenLibraryDoc` (resolución de portadas con `covers.openlibrary.org`, autores y año con serialización estricta de `meta`) y objeto `openLibraryProvider: SearchProvider` consumiendo `https://openlibrary.org/search.json`.
   - Respetar estándares web: sin cabecera prohibida `User-Agent` en navegador, retorno inmediato de `[]` ante consultas vacías y manejo de errores HTTP.
   - Crear `src/providers/openLibrary.test.ts` cubriendo normalización pura (completo, sin autor, sin portada `cover_i`, sin año), llamada con query y fields, errores 500 y cancelación por `signal`.
