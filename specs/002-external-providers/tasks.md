@@ -11,7 +11,7 @@ Este plan de tareas desglosa la implementación de la Fase 1b (`specs/002-extern
   - Documentar `VITE_RAWG_API_KEY` y `VITE_BGG_API_TOKEN` en `.env.example`.
   - Hecho cuando: `npx tsc --noEmit`, `npm run lint` y los tests existentes pasen en verde con cero `any`.
 
-- [ ] **T2. Adaptador RAWG y suite de pruebas unitarias.** RF-01.1, RF-01.2, RF-01.3, RNF-01, RNF-02, RNF-03, RNF-04
+- [x] **T2. Adaptador RAWG y suite de pruebas unitarias.** RF-01.1, RF-01.2, RF-01.3, RNF-01, RNF-02, RNF-03, RNF-04
   - Crear `src/providers/rawg.ts` con tipos DTO de respuesta (`RawgGame`, `RawgResponse`), función pura `normalizeRawgGame` serializando listas en cadenas para respetar `meta: Record<string, string | number | boolean>`, y objeto `rawgProvider: SearchProvider` consumiendo `https://api.rawg.io/api/games`.
   - Manejo defensivo: verificación de `VITE_RAWG_API_KEY`, retorno inmediato de `[]` ante consultas vacías, códigos HTTP amigables (401, 429, 500) y paso de `options?.signal`.
   - Crear `src/providers/rawg.test.ts` cubriendo normalización pura (completo, sin imagen, sin fecha, sin plataformas), consulta HTTP con API key, errores 401/429/500 y cancelación con `signal`.
