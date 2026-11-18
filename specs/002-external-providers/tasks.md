@@ -35,7 +35,7 @@ Este plan de tareas desglosa la implementación de la Fase 1b (`specs/002-extern
   - Crear `src/providers/index.test.ts` cubriendo la resolución de cada proveedor y el fallback defensivo ante tipos desconocidos (`'unknown' as ProviderType` sin usar `any`).
   - Hecho cuando: `npm run test src/providers/index.test.ts` pase al 100% y `npx tsc --noEmit` y `npm run lint` estén en verde.
 
-- [ ] **T6. Integración reactiva en `AddItemSheet.tsx`.** RF-05.1, RF-05.2, RF-05.3, RF-05.4, RF-05.5, RNF-01, RNF-03
+- [x] **T6. Integración reactiva en `AddItemSheet.tsx`.** RF-05.1, RF-05.2, RF-05.3, RF-05.4, RF-05.5, RNF-01, RNF-03
   - En `src/features/items/components/AddItemSheet.tsx`:
     - Resolver el proveedor con `getSearchProvider(collection.provider)`.
     - Si `collection.provider === 'manual'`, ocultar las pestañas de selección y renderizar directamente el formulario de "Alta manual".

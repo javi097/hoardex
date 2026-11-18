@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
 export interface Props {
+  defaultTitle?: string;
   onSubmit: (data: {
     title: string;
     subtitle?: string;
@@ -15,11 +16,12 @@ export interface Props {
 }
 
 export function ItemForm({
+  defaultTitle = '',
   onSubmit,
   onCancel,
   submitLabel = 'Añadir ítem',
 }: Props) {
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState(defaultTitle);
   const [subtitle, setSubtitle] = useState('');
   const [releaseYear, setReleaseYear] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
