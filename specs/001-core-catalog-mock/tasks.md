@@ -21,7 +21,7 @@ Estado: pendiente
 
 ---
 
-- [ ] **T2. Contratos de datos globales.** RF-02.1, RF-02.2, RF-02.3
+- [x] **T2. Contratos de datos globales.** RF-02.1, RF-02.2, RF-02.3
   - Crear `src/interfaces/collection.interface.ts` con `CollectionStatus`, `ProviderType`, `Collection` y `CollectionTemplate` exactamente según la spec (sin `any`, sin lógica).
   - Crear `src/interfaces/item.interface.ts` con `Item` (todos los campos de la spec, incluidos `xpAwarded: boolean` y `completedAt?: string`).
   - Crear `src/interfaces/provider.interface.ts` con `SearchResult` y `SearchProvider`.
