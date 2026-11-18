@@ -49,7 +49,7 @@ Estado: pendiente
 
 ---
 
-- [ ] **T5. Proveedor mock y stores Zustand.** RF-03.3, RF-04.1, RF-04.2, RF-04.3, RF-04.4
+- [x] **T5. Proveedor mock y stores Zustand.** RF-03.3, RF-04.1, RF-04.2, RF-04.3, RF-04.4
   - Crear `src/providers/mock.ts` exportando `mockProvider: SearchProvider` con un dataset de ~20 entradas hardcodeadas en categorías (videojuegos, libros, música, juegos de mesa, figuras); incluir ≥2 sin `coverUrl` y ≥2 sin `releaseYear`. La función `search` filtra por keywords, simula 300–600 ms de latencia y devuelve `[]` inmediatamente si `query` está vacía.
   - Crear `src/features/collections/store/collections.store.ts` con `useCollectionsStore` (Zustand + `persist`, clave `hoardex-collections`): estado `{ collections: Collection[] }`, acciones `addCollection`, `removeCollection` (que llama a `useItemsStore.getState().removeItemsByCollection(id)`), `updateCollection`. Persistencia defensiva con `merge` que no lanza si los datos son parciales.
   - Crear `src/features/items/store/items.store.ts` con `useItemsStore` (Zustand + `persist`, clave `hoardex-items`): estado `{ items: Item[] }`, acciones `addItem`, `removeItem`, `removeItemsByCollection`, `updateItemStatus` (delega en `changeItemStatus` de `core/`).
