@@ -23,7 +23,7 @@ Este plan de tareas desglosa la implementación de la Fase 1b (`specs/002-extern
   - Crear `src/providers/openLibrary.test.ts` cubriendo normalización pura (completo, sin autor, sin portada `cover_i`, sin año), llamada con query y fields, errores 500 y cancelación por `signal`.
   - Hecho cuando: `npm run test src/providers/openLibrary.test.ts` pase al 100% y `npx tsc --noEmit` y `npm run lint` pasen limpios.
 
-- [ ] **T4. Adaptador BoardGameGeek y suite de pruebas unitarias.** RF-03.1, RF-03.2, RF-03.3, RF-03.4, RNF-01, RNF-02, RNF-03
+- [x] **T4. Adaptador BoardGameGeek y suite de pruebas unitarias.** RF-03.1, RF-03.2, RF-03.3, RF-03.4, RNF-01, RNF-02, RNF-03
   - Crear `src/providers/bgg.ts` con la función pura `parseBggXml` usando `DOMParser` para extraer `<name type="primary">`, año y generar `SearchResult[]` (con portada `undefined` y `meta` estrictamente tipado).
   - Objeto `bggProvider: SearchProvider` consultando `/api/bgg/search?query=...&type=boardgame`, inyectando `Authorization: Bearer <token>` si existe `VITE_BGG_API_TOKEN`, y capturando errores 401 o fallos de red con mensaje amigable invitando a "Alta manual".
   - Crear `src/providers/bgg.test.ts` cubriendo parseo XML puro (múltiples nombres, sin año, XML vacío, error de parser) y llamadas de red con token o errores.
