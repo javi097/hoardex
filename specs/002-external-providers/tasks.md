@@ -29,7 +29,7 @@ Este plan de tareas desglosa la implementación de la Fase 1b (`specs/002-extern
   - Crear `src/providers/bgg.test.ts` cubriendo parseo XML puro (múltiples nombres, sin año, XML vacío, error de parser) y llamadas de red con token o errores.
   - Hecho cuando: `npm run test src/providers/bgg.test.ts` pase al 100% y `npx tsc --noEmit` y `npm run lint` pasen en verde.
 
-- [ ] **T5. Proveedor manual y registro unificado con pruebas unitarias.** RF-04.1, RF-04.2, RNF-01, RNF-02
+- [x] **T5. Proveedor manual y registro unificado con pruebas unitarias.** RF-04.1, RF-04.2, RNF-01, RNF-02
   - Crear `src/providers/manual.ts` con `manualProvider: SearchProvider` que retorna siempre `Promise.resolve([])`.
   - Crear `src/providers/index.ts` exportando la factoría `getSearchProvider(type: ProviderType): SearchProvider` que resuelve dinámicamente `'rawg'`, `'openLibrary'`, `'bgg'`, `'manual'`, con fallback defensivo a `mockProvider`.
   - Crear `src/providers/index.test.ts` cubriendo la resolución de cada proveedor y el fallback defensivo ante tipos desconocidos (`'unknown' as ProviderType` sin usar `any`).
