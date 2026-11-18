@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
 import { ArrowLeft, Plus, Trash2, PackagePlus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -20,14 +20,15 @@ export function CollectionPage() {
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
-  const collection = useCollectionsStore((state) =>
-    state.collections.find((c) => c.id === id)
-  );
+  const collections = useCollectionsStore((state) => state.collections);
+  const collection = collections.find((c) => c.id === id);
   const removeCollection = useCollectionsStore(
     (state) => state.removeCollection
   );
-  const items = useItemsStore((state) =>
-    state.items.filter((item) => item.collectionId === id)
+  const allItems = useItemsStore((state) => state.items);
+  const items = useMemo(
+    () => allItems.filter((item) => item.collectionId === id),
+    [allItems, id]
   );
 
   if (!collection) {

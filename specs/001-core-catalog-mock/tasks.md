@@ -90,21 +90,21 @@ Estado: pendiente
 
 ---
 
-- [ ] **T8. Puerta de calidad y cierre.** RF-07, RNF-01 a RNF-05
+- [x] **T8. Puerta de calidad y cierre.** RF-07, RNF-01 a RNF-05
   - Ejecutar `npx tsc --noEmit` → debe terminar sin errores.
   - Ejecutar `npm run test` → los 14 tests (6 + 8) deben pasar en verde.
   - Ejecutar `npm run lint` → sin errores ni advertencias.
   - Ejecutar `npm run build` → bundle sin errores.
   - Verificación visual con Chrome DevTools MCP en `http://localhost:5173/`:
-    - [ ] `HomePage` muestra colecciones con color de acento y tira de portadas.
-    - [ ] Crear colección desde plantilla y desde cero funciona correctamente.
-    - [ ] Desde `CollectionPage` se puede añadir un ítem por búsqueda mock y de forma manual.
-    - [ ] Cambiar el estado de un ítem desde la cuadrícula actualiza la UI sin recargar.
-    - [ ] Los ítems sin portada muestran el placeholder de `CoverImage` (icono `ImageOff`).
-    - [ ] Eliminar colección con confirmación elimina también sus ítems (no quedan huérfanos en DevTools → Application → Local Storage).
-    - [ ] Recargar la página mantiene todas las colecciones e ítems (persistencia en `localStorage`).
-    - [ ] El toggle de modo oscuro funciona y se recuerda entre recargas; no hay flash visual (FOUC) al recargar.
-    - [ ] La vista en móvil (emulación 375 px en DevTools) es funcional y usable.
-    - [ ] No existe ningún `any` explícito en `src/` (búsqueda en editor o `grep -r ": any" src/`).
+    - [x] `HomePage` muestra colecciones con color de acento y tira de portadas.
+    - [x] Crear colección desde plantilla y desde cero funciona correctamente.
+    - [x] Desde `CollectionPage` se puede añadir un ítem por búsqueda mock y de forma manual.
+    - [x] Cambiar el estado de un ítem desde la cuadrícula actualiza la UI sin recargar.
+    - [x] Los ítems sin portada muestran el placeholder de `CoverImage` (icono `ImageOff`).
+    - [x] Eliminar colección con confirmación elimina también sus ítems (no quedan huérfanos en DevTools → Application → Local Storage).
+    - [x] Recargar la página mantiene todas las colecciones e ítems (persistencia en `localStorage`).
+    - [x] El toggle de modo oscuro funciona y se recuerda entre recargas; no hay flash visual (FOUC) al recargar.
+    - [x] La vista en móvil (emulación 375 px en DevTools) es funcional y usable.
+    - [x] No existe ningún `any` explícito en `src/` (búsqueda en editor o `grep -r ": any" src/`).
   - Actualizar `MEMORY.md`: estado de la spec 001 como "implementada", decisiones clave adoptadas (claves de persistencia separadas, `crypto.randomUUID`, registro de iconos curado) y errores a evitar en fases siguientes.
   - Hecho cuando: todos los checks de arriba están marcados, `MEMORY.md` está actualizado y la spec puede considerarse cerrada.

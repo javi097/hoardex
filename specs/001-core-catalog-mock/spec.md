@@ -1,5 +1,5 @@
 # Spec 001 — Core Catalog Mock
-Estado: aprobada
+Estado: implementada
 
 ---
 
@@ -412,21 +412,21 @@ Acciones:
 
 La spec se considera implementada cuando **todos** los siguientes puntos son verdaderos:
 
-- [ ] `npx tsc --noEmit` termina sin errores.
-- [ ] `npm run test` ejecuta los tests de `templates.test.ts` e `items.test.ts` y todos pasan.
-- [ ] `npm run lint` no emite errores ni advertencias.
-- [ ] `npm run build` produce un bundle sin errores.
-- [ ] En `http://localhost:5173/`:
-  - [ ] La `HomePage` muestra las colecciones con su color de acento y miniaturas de portadas.
-  - [ ] Es posible crear una colección desde plantilla y desde cero.
-  - [ ] Tras crear una colección, navegar a ella y añadir un ítem (tanto por búsqueda mock como de forma manual).
-  - [ ] Cambiar el estado de un ítem desde la cuadrícula actualiza el estado visualmente.
-  - [ ] Recargar la página mantiene todas las colecciones e ítems (persistencia en `localStorage`).
-  - [ ] El toggle de modo claro/oscuro funciona y se recuerda entre recargas.
-  - [ ] Los ítems sin portada muestran el placeholder de `CoverImage`.
-  - [ ] Eliminar una colección (con confirmación) elimina también sus ítems.
-- [ ] La vista en dispositivo móvil (≤ 375 px) es funcional y usable.
-- [ ] No existe ninguna variable o propiedad de tipo `any` en el código de producción de `src/`.
+- [x] `npx tsc --noEmit` termina sin errores.
+- [x] `npm run test` ejecuta los tests de `templates.test.ts` e `items.test.ts` y todos pasan.
+- [x] `npm run lint` no emite errores ni advertencias.
+- [x] `npm run build` produce un bundle sin errores.
+- [x] En `http://localhost:5173/`:
+  - [x] La `HomePage` muestra las colecciones con su color de acento y miniaturas de portadas.
+  - [x] Es posible crear una colección desde plantilla y desde cero.
+  - [x] Tras crear una colección, navegar a ella y añadir un ítem (tanto por búsqueda mock como de forma manual).
+  - [x] Cambiar el estado de un ítem desde la cuadrícula actualiza el estado visualmente.
+  - [x] Recargar la página mantiene todas las colecciones e ítems (persistencia en `localStorage`).
+  - [x] El toggle de modo claro/oscuro funciona y se recuerda entre recargas.
+  - [x] Los ítems sin portada muestran el placeholder de `CoverImage`.
+  - [x] Eliminar una colección (con confirmación) elimina también sus ítems.
+- [x] La vista en dispositivo móvil (≤ 375 px) es funcional y usable.
+- [x] No existe ninguna variable o propiedad de tipo `any` en el código de producción de `src/`.
 
 ---
 
