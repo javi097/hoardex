@@ -1,0 +1,18 @@
+# Constitución — Hoardex
+
+Principios innegociables. Toda spec, plan y tarea debe cumplirlos sin excepción.
+
+1. **Arquitectura modular por dominios**: Toda la lógica de negocio, estado y vistas de dominio viven estrictamente en `src/features/<dominio>/` (`collections`, `items`, `gamification`, `stats`) con subcarpetas `core`, `components`, `store` y `hooks`. Los adaptadores de APIs externas residen en `src/providers/`, los contratos globales en `src/interfaces/` y los componentes transversales en `src/components/ui/` o `src/components/custom/`. Prohibido crear archivos o utilidades dispersos en la raíz de `src/`.
+2. **La spec manda**: Nada se implementa si no está recogido y aprobado en la spec activa (`specs/NNN-*/`). Si falta un requisito, un caso de borde (APIs sin resultados, portadas nulas, colecciones vacías, fechas límite en rachas) o una decisión de diseño, el agente se detiene y pregunta antes de asumir.
+3. **Dominio agnóstico y relacional plano**: Todo es un ítem genérico vinculado a una colección mediante `collectionId`, sin anidar arrays de ítems dentro de colecciones. Prohibido crear tipos, stores o componentes específicos por categoría (`GameCard`, `BookForm`); la configuración visual (color vía variables CSS, icono, estados) y el proveedor pertenecen a los datos de la colección.
+4. **Tipado estricto innegociable**: Cero `any` y cero tipos implícitos. Todas las entidades compartidas (`Collection`, `Item`, `SearchResult`, `Achievement`, etc.) derivan de contratos explícitos en `src/interfaces/*.interface.ts`, y todo componente tipa sus propiedades mediante `interface Props`.
+5. **Pureza matemática y determinismo en el core**: Las funciones ubicadas en `core/` (cálculo de XP, niveles, rachas, evaluación de logros, plantillas, filtrado y ordenación) son estrictamente puras. No dependen de React, del DOM, de Zustand ni del reloj del sistema (`Date.now()`, `new Date()`); toda dependencia temporal se recibe por parámetro para garantizar tests unitarios deterministas en Vitest.
+6. **Gamificación idempotente y derivada**: El XP se concede una única vez por ítem completado (`xpAwarded`), evitando duplicados al reabrir y volver a completar ítems. El nivel actual y el progreso se derivan siempre de forma pura a partir del XP total, y los logros se evalúan como reglas declarativas puras sobre el estado.
+7. **Estado predecible, persistencia defensiva y proveedores aislados**:
+   - Las acciones de los stores de Zustand (`collections.store.ts`, `items.store.ts`, `gamification.store.ts`) son puras, atómicas e inmutables.
+   - Persistencia defensiva en `localStorage` bajo la clave `hoardex-storage` con valores por defecto ante cambios de esquema.
+   - Todo origen externo implementa `SearchProvider` en `src/providers/` y devuelve exclusivamente `SearchResult` normalizado, aislando la UI de formatos externos crudos o campos incompletos.
+8. **UI accesible, responsive y puerta de calidad**:
+   - Diseño *mobile-first* con soporte de modo claro y oscuro, construido exclusivamente con primitivas de Shadcn UI y utilidades de Tailwind CSS combinadas mediante `cn()` de `@/lib/utils`.
+   - Prohibido dar por cerrada una tarea o avanzar con errores en `npx tsc --noEmit`, avisos de `npm run lint`, fallos en `npm run test` o errores en `npm run build`.
+9. **Convención lingüística**: Código, variables, contratos de TypeScript, nombres de carpetas y commits en inglés; documentación de gobernanza (`constitution.md`, `AGENTS.md`, `MEMORY.md`), especificaciones (`specs/`) y textos de interfaz en español.

@@ -22,3 +22,30 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables
+.env
+.env.production
+.env*.local
+
+# Permitir plantilla de variables de entorno
+!.env.example
+
+# Vercel
+.vercel
+
+# Windows
+Thumbs.db
+
+# Vitest reports and artifacts
+.vitest/
+
+# Coverage (Vitest)
+coverage/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Herramientas de agente / entorno
+.antigravity/
+.agents/
