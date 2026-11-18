@@ -57,7 +57,7 @@ Estado: pendiente
 
 ---
 
-- [ ] **T6. Componentes UI primitivos y transversales.** RF-01.3 (decisión 6), RF-05.1, RF-05.2, RF-05.3, RF-05.4
+- [x] **T6. Componentes UI primitivos y transversales.** RF-01.3 (decisión 6), RF-05.1, RF-05.2, RF-05.3, RF-05.4
   - Crear `src/components/ui/sheet.tsx` sobre `@radix-ui/react-dialog`: exportar `Sheet`, `SheetTrigger`, `SheetContent` (con prop `side`), `SheetHeader`, `SheetTitle`, `SheetDescription`, `SheetFooter`, `SheetClose`. Animaciones de entrada/salida con clases Tailwind.
   - Crear `src/components/ui/` los primitivos adicionales que necesiten wrappers propios: `button.tsx` (con `class-variance-authority`), `input.tsx`, `label.tsx`, `select.tsx` (sobre `@radix-ui/react-select`), `badge.tsx`, `separator.tsx`. Seguir la convención Shadcn UI (props estándar HTML + `cn()`).
   - Crear `src/hooks/useTheme.ts`: inicializa desde `localStorage['hoardex-theme']` o `matchMedia`, expone `{ theme, toggleTheme }`, actualiza la clase `.dark` en `document.documentElement` y persiste en `localStorage`.
