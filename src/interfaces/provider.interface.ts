@@ -7,6 +7,10 @@ export interface SearchResult {
   meta: Record<string, string | number | boolean>;
 }
 
+export interface SearchOptions {
+  signal?: AbortSignal;
+}
+
 export interface SearchProvider {
-  search(query: string): Promise<SearchResult[]>;
+  search(query: string, options?: SearchOptions): Promise<SearchResult[]>;
 }

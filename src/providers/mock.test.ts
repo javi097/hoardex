@@ -25,4 +25,14 @@ describe('mockProvider', () => {
     expect(noCovers.length).toBeGreaterThanOrEqual(2);
     expect(noYears.length).toBeGreaterThanOrEqual(2);
   });
+
+  it('supports cancellation via AbortSignal', async () => {
+    const controller = new AbortController();
+    const searchPromise = mockProvider.search('zelda', { signal: controller.signal });
+    controller.abort();
+
+    // La promesa debe resolverse como array vacío o manejarse limpiamente
+    const results = await searchPromise;
+    expect(results).toEqual([]);
+  });
 });

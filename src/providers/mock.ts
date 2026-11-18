@@ -1,4 +1,5 @@
 import type {
+  SearchOptions,
   SearchProvider,
   SearchResult,
 } from '@/interfaces/provider.interface';
@@ -171,8 +172,12 @@ const MOCK_DATASET: SearchResult[] = [
 ];
 
 export const mockProvider: SearchProvider = {
-  async search(query: string): Promise<SearchResult[]> {
+  async search(query: string, options?: SearchOptions): Promise<SearchResult[]> {
     try {
+      if (options?.signal?.aborted) {
+        throw new DOMException('Aborted', 'AbortError');
+      }
+
       const cleanQuery = query.trim().toLowerCase();
       if (!cleanQuery) {
         return [];
@@ -180,7 +185,19 @@ export const mockProvider: SearchProvider = {
 
       // Latencia realista simulada (300ms a 600ms)
       const delayMs = 300 + Math.floor(Math.random() * 300);
-      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      await new Promise<void>((resolve, reject) => {
+        const timer = setTimeout(resolve, delayMs);
+        if (options?.signal) {
+          options.signal.addEventListener(
+            'abort',
+            () => {
+              clearTimeout(timer);
+              reject(new DOMException('Aborted', 'AbortError'));
+            },
+            { once: true }
+          );
+        }
+      });
 
       if (cleanQuery === 'all') {
         return [...MOCK_DATASET];
