@@ -80,4 +80,68 @@ describe('useItemsStore', () => {
     expect(current.completedAt).toBe(completedNow); // se mantiene
     expect(current.updatedAt).toBe(reopenedNow);
   });
+
+  it('updates item details (rating, notes) and refreshes updatedAt', () => {
+    useItemsStore.getState().addItem(sampleItem);
+
+    const now = '2026-11-20T10:00:00.000Z';
+    useItemsStore.getState().updateItem(
+      'it-1',
+      {
+        rating: 5,
+        notes: 'Clásico absoluto de plataformas.',
+      },
+      now
+    );
+
+    let current = useItemsStore.getState().items[0];
+    expect(current.rating).toBe(5);
+    expect(current.notes).toBe('Clásico absoluto de plataformas.');
+    expect(current.updatedAt).toBe(now);
+
+    // Desmarcar rating a undefined
+    const now2 = '2026-11-20T11:00:00.000Z';
+    useItemsStore.getState().updateItem(
+      'it-1',
+      {
+        rating: undefined,
+      },
+      now2
+    );
+
+    current = useItemsStore.getState().items[0];
+    expect(current.rating).toBeUndefined();
+    expect(current.notes).toBe('Clásico absoluto de plataformas.');
+    expect(current.updatedAt).toBe(now2);
+  });
+
+  it('reassigns items status in batch preserving XP idempotence', () => {
+    const itemA: Item = { ...sampleItem, id: 'it-a', statusId: 'st-old' };
+    const itemB: Item = { ...sampleItem, id: 'it-b', statusId: 'st-old' };
+    const itemC: Item = { ...sampleItem, id: 'it-c', statusId: 'st-untouched' };
+
+    useItemsStore.getState().addItem(itemA);
+    useItemsStore.getState().addItem(itemB);
+    useItemsStore.getState().addItem(itemC);
+
+    const now = '2026-11-20T12:00:00.000Z';
+    useItemsStore
+      .getState()
+      .reassignItemsStatus(['it-a', 'it-b'], 'st-new', true, now);
+
+    const items = useItemsStore.getState().items;
+    const updatedA = items.find((i) => i.id === 'it-a')!;
+    const updatedB = items.find((i) => i.id === 'it-b')!;
+    const untouchedC = items.find((i) => i.id === 'it-c')!;
+
+    expect(updatedA.statusId).toBe('st-new');
+    expect(updatedA.xpAwarded).toBe(true);
+    expect(updatedA.completedAt).toBe(now);
+    expect(updatedA.updatedAt).toBe(now);
+
+    expect(updatedB.statusId).toBe('st-new');
+    expect(updatedB.xpAwarded).toBe(true);
+
+    expect(untouchedC.statusId).toBe('st-untouched');
+  });
 });

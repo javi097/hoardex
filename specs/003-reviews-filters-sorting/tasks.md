@@ -16,7 +16,7 @@ Este plan de tareas desglosa la implementación de la Fase 2 (`specs/003-reviews
   - Crear `src/features/items/core/sorting.test.ts` y `src/features/collections/core/reconciliation.test.ts` cubriendo todos los casos de filtrado, ordenación, diacríticos, huérfanos y casos límite.
   - Hecho cuando: `npm run test src/features/items/core/sorting.test.ts src/features/collections/core/reconciliation.test.ts` pase al 100% y `tsc`/`lint` pasen limpios.
 
-- [ ] **T3. Ampliación del store de ítems y tests unitarios.** RF-01.2, RF-02.3, RF-06.5, RNF-01, RNF-05
+- [x] **T3. Ampliación del store de ítems y tests unitarios.** RF-01.2, RF-02.3, RF-06.5, RNF-01, RNF-05
   - Añadir acciones en `src/features/items/store/items.store.ts`:
     - `updateItem(id, patch, now)`: actualiza inmutablemente campos de un ítem (como `rating`, `notes`, etc.) refrescando `updatedAt`.
     - `reassignItemsStatus(itemIds, newStatusId, isCompleted, now)`: reasigna en lote el estado de ítems específicos preservando la idempotencia de XP.
