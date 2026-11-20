@@ -25,6 +25,7 @@ export interface ItemsState {
     isCompleted: boolean,
     now: string
   ) => void;
+  setItems: (items: Item[]) => void;
 }
 
 export const useItemsStore = create<ItemsState>()(
@@ -75,6 +76,8 @@ export const useItemsStore = create<ItemsState>()(
           ),
         }));
       },
+
+      setItems: (items) => set({ items }),
     }),
     {
       name: 'hoardex-items',

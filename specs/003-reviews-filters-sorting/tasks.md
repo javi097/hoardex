@@ -30,7 +30,7 @@ Este plan de tareas desglosa la implementación de la Fase 2 (`specs/003-reviews
   - Crear `src/components/custom/StarRating.test.tsx` verificando renderizado, interacción, desmarcado, modo readonly y atributos de accesibilidad.
   - Hecho cuando: `npm run test src/components/custom/StarRating.test.tsx` pase al 100% y `tsc`/`lint` pasen limpios.
 
-- [ ] **T5. Paneles laterales `ItemDetailSheet.tsx` y `EditCollectionSheet.tsx`.** RF-02.1, RF-02.2, RF-02.3, RF-02.4, RF-06.1, RF-06.2, RF-06.3, RF-06.4, RF-06.5, RNF-04
+- [x] **T5. Paneles laterales `ItemDetailSheet.tsx` y `EditCollectionSheet.tsx`.** RF-02.1, RF-02.2, RF-02.3, RF-02.4, RF-06.1, RF-06.2, RF-06.3, RF-06.4, RF-06.5, RNF-04
   - Añadir prop opcional `hideProvider?: boolean` en `src/features/collections/components/CollectionForm.tsx` para ocultar el selector de proveedor durante la edición (RF-06.3).
   - Crear `src/features/items/components/ItemDetailSheet.tsx`: panel lateral accesible con carátula ampliada, metadatos, selector de estado, estrellas `StarRating`, textarea de notas/reseña, fechas formateadas y botón de eliminación con confirmación.
   - Crear `src/features/collections/components/EditCollectionSheet.tsx`: panel lateral que pre-carga los valores de la colección, reutiliza `CollectionForm` (con `hideProvider={true}`), ejecuta `reconcileOrphanItems`, actualiza ítems reasignados en `itemsStore` con toast informativo y guarda los cambios en `collectionsStore`.

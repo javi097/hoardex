@@ -23,6 +23,7 @@ export interface Props {
   onSubmit: (params: CreateCollectionParams) => void;
   onCancel?: () => void;
   submitLabel?: string;
+  hideProvider?: boolean;
 }
 
 const DEFAULT_STATUSES: CollectionStatus[] = [
@@ -36,6 +37,7 @@ export function CollectionForm({
   onSubmit,
   onCancel,
   submitLabel = 'Guardar colección',
+  hideProvider = false,
 }: Props) {
   const [name, setName] = useState(initialValues?.name ?? '');
   const [description, setDescription] = useState(
@@ -117,24 +119,26 @@ export function CollectionForm({
         />
       </div>
 
-      {/* Proveedor de búsqueda externa */}
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="collection-provider">Proveedor de búsqueda</Label>
-        <Select
-          value={provider}
-          onValueChange={(val) => setProvider(val as ProviderType)}
-        >
-          <SelectTrigger id="collection-provider">
-            <SelectValue placeholder="Selecciona un proveedor" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="manual">Manual (sin proveedor externo)</SelectItem>
-            <SelectItem value="rawg">RAWG (Videojuegos)</SelectItem>
-            <SelectItem value="openLibrary">Open Library (Libros)</SelectItem>
-            <SelectItem value="bgg">BoardGameGeek (Juegos de mesa)</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {/* Proveedor de búsqueda externa (oculto en modo edición) */}
+      {!hideProvider && (
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="collection-provider">Proveedor de búsqueda</Label>
+          <Select
+            value={provider}
+            onValueChange={(val) => setProvider(val as ProviderType)}
+          >
+            <SelectTrigger id="collection-provider">
+              <SelectValue placeholder="Selecciona un proveedor" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="manual">Manual (sin proveedor externo)</SelectItem>
+              <SelectItem value="rawg">RAWG (Videojuegos)</SelectItem>
+              <SelectItem value="openLibrary">Open Library (Libros)</SelectItem>
+              <SelectItem value="bgg">BoardGameGeek (Juegos de mesa)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* Color de acento */}
       <div className="flex flex-col gap-1.5">
