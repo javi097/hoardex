@@ -51,7 +51,7 @@ Este plan de tareas desglosa la implementación de la Fase 2 (`specs/003-reviews
     - Conectar la apertura de `ItemDetailSheet` al seleccionar un ítem.
   - Hecho cuando: `npx tsc --noEmit`, `npm run lint` y los tests existentes pasen limpios.
 
-- [ ] **T7. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-02, RNF-03, RNF-04, RNF-05
+- [x] **T7. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-02, RNF-03, RNF-04, RNF-05
   - Ejecutar verificación estática completa: `npx tsc --noEmit`, `npm run lint`, `npm run test` (suite completa) y `npm run build`. Confirmar 0 errores, 0 warnings y 0 `any`.
   - Levantar `npm run dev` y validar con Chrome DevTools MCP en `http://localhost:5173/`:
     - Ficha y reseña: abrir `ItemDetailSheet`, puntuar con estrellas, escribir notas, guardar y verificar badge en `ItemCard`.

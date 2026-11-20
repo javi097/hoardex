@@ -1,5 +1,5 @@
 # Spec 003 — Reviews, Filters, Sorting & Collection Editing
-Estado: aprobada
+Estado: implementada
 
 ---
 
@@ -149,23 +149,23 @@ Esta especificación corresponde a la **Fase 2: Gestión avanzada del catálogo*
 
 La spec se considera implementada cuando:
 
-- [ ] El contrato `Item` en `src/interfaces/item.interface.ts` incluye opcionalmente `rating?: number` y `notes?: string`.
-- [ ] La función pura `filterAndSortItems` en `src/features/items/core/` implementa búsqueda insensible a tildes, filtrado por estado y las 7 variantes de ordenación, pasando el 100% de sus tests en `items.test.ts`.
-- [ ] La función pura de reconciliación de estados de colección reubica los ítems de estados eliminados al primer estado sin dejar huérfanos, con tests unitarios en `templates.test.ts` o `collections.test.ts`.
-- [ ] `ItemDetailSheet` permite ver la ficha completa, modificar estado, puntuar con estrellas, editar notas y eliminar el ítem con confirmación.
-- [ ] `ItemCard` muestra el distintivo de estrellas si el ítem tiene valoración y abre `ItemDetailSheet` al hacer clic en el cuerpo de la tarjeta.
-- [ ] `CollectionPage` integra barra de búsqueda, píldoras de filtrado por estado con contadores y menú desplegable de ordenación.
-- [ ] `EditCollectionSheet` permite editar nombre, descripción, icono, color y estados de la colección actual, actualizando stores e ítems asociados.
-- [ ] `npx tsc --noEmit` pasa con 0 errores y 0 `any`.
-- [ ] `npm run lint` pasa con 0 errores y 0 warnings.
-- [ ] `npm run test` ejecuta toda la suite completa en verde.
-- [ ] `npm run build` compila con éxito.
-- [ ] Verificación con Chrome DevTools MCP en `http://localhost:5173/`:
-  - [ ] Apertura de `ItemDetailSheet` desde la tarjeta y edición de valoración (estrellas) y notas.
-  - [ ] Visualización del distintivo de estrellas en `ItemCard`.
-  - [ ] Filtrado por texto y por estado en la colección en tiempo real.
-  - [ ] Cambio de criterio de ordenación reflejado de inmediato.
-  - [ ] Edición de colección (nombre, color, estados) y confirmación de que los ítems conservan estados válidos.
+- [x] El contrato `Item` en `src/interfaces/item.interface.ts` incluye opcionalmente `rating?: number` y `notes?: string`.
+- [x] La función pura `filterAndSortItems` en `src/features/items/core/` implementa búsqueda insensible a tildes, filtrado por estado y las 7 variantes de ordenación, pasando el 100% de sus tests en `items.test.ts`.
+- [x] La función pura de reconciliación de estados de colección reubica los ítems de estados eliminados al primer estado sin dejar huérfanos, con tests unitarios en `templates.test.ts` o `collections.test.ts`.
+- [x] `ItemDetailSheet` permite ver la ficha completa, modificar estado, puntuar con estrellas, editar notas y eliminar el ítem con confirmación.
+- [x] `ItemCard` muestra el distintivo de estrellas si el ítem tiene valoración y abre `ItemDetailSheet` al hacer clic en el cuerpo de la tarjeta.
+- [x] `CollectionPage` integra barra de búsqueda, píldoras de filtrado por estado con contadores y menú desplegable de ordenación.
+- [x] `EditCollectionSheet` permite editar nombre, descripción, icono, color y estados de la colección actual, actualizando stores e ítems asociados.
+- [x] `npx tsc --noEmit` pasa con 0 errores y 0 `any`.
+- [x] `npm run lint` pasa con 0 errores y 0 warnings.
+- [x] `npm run test` ejecuta toda la suite completa en verde.
+- [x] `npm run build` compila con éxito.
+- [x] Verificación con Chrome DevTools MCP en `http://localhost:5173/`:
+  - [x] Apertura de `ItemDetailSheet` desde la tarjeta y edición de valoración (estrellas) y notas.
+  - [x] Visualización del distintivo de estrellas en `ItemCard`.
+  - [x] Filtrado por texto y por estado en la colección en tiempo real.
+  - [x] Cambio de criterio de ordenación reflejado de inmediato.
+  - [x] Edición de colección (nombre, color, estados) y confirmación de que los ítems conservan estados válidos.
 
 ---
 
