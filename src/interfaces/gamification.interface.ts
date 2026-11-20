@@ -1,4 +1,5 @@
 export type XpActionType =
+  | 'create_collection'
   | 'add_item'
   | 'complete_item'
   | 'rate_and_review'

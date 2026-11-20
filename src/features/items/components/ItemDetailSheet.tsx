@@ -4,6 +4,9 @@ import { toast } from 'sonner';
 import type { Item } from '@/interfaces/item.interface';
 import type { Collection } from '@/interfaces/collection.interface';
 import { useItemsStore } from '@/features/items/store/items.store';
+import { useCollectionsStore } from '@/features/collections/store/collections.store';
+import { useGamificationStore } from '@/features/gamification/store/gamification.store';
+import { notifyGamificationResult } from '@/features/gamification/core/notifications';
 import { CoverImage } from '@/components/custom/CoverImage';
 import { StarRating } from '@/components/custom/StarRating';
 import { ConfirmDialog } from '@/components/custom/ConfirmDialog';
@@ -84,12 +87,14 @@ function ItemDetailContent({
   const handleStatusChange = (newStatusId: string) => {
     const targetStatus = collection.statuses.find((s) => s.id === newStatusId);
     const targetIsCompleted = Boolean(targetStatus?.isCompleted);
+    const shouldAwardXp = targetIsCompleted && !liveItem.xpAwarded;
+    const now = new Date().toISOString();
 
     updateItemStatus(
       liveItem.id,
       newStatusId,
       targetIsCompleted,
-      new Date().toISOString()
+      now
     );
 
     if (targetIsCompleted) {
@@ -97,20 +102,59 @@ function ItemDetailContent({
     } else {
       toast.info(`Estado actualizado a ${targetStatus?.label ?? newStatusId}`);
     }
+
+    if (shouldAwardXp) {
+      const today = now.slice(0, 10);
+      const currentCollections = useCollectionsStore.getState().collections;
+      const updatedItems = useItemsStore.getState().items;
+
+      const gamificationResult = useGamificationStore.getState().handleUserAction({
+        action: 'complete_item',
+        description: `Ítem completado: ${liveItem.title}`,
+        targetId: liveItem.id,
+        today,
+        now,
+        collections: currentCollections,
+        items: updatedItems,
+      });
+      notifyGamificationResult(gamificationResult);
+    }
   };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     const now = new Date().toISOString();
+    const hasReviewContent =
+      (rating !== undefined && rating > 0) || notes.trim().length > 0;
+    const shouldAwardReviewXp = !liveItem.reviewXpAwarded && hasReviewContent;
+
     updateItem(
       liveItem.id,
       {
         rating,
         notes: notes.trim() ? notes.trim() : undefined,
+        reviewXpAwarded: shouldAwardReviewXp ? true : liveItem.reviewXpAwarded,
       },
       now
     );
     toast.success('Detalles del ítem guardados con éxito.');
+
+    if (shouldAwardReviewXp) {
+      const today = now.slice(0, 10);
+      const currentCollections = useCollectionsStore.getState().collections;
+      const updatedItems = useItemsStore.getState().items;
+
+      const gamificationResult = useGamificationStore.getState().handleUserAction({
+        action: 'rate_and_review',
+        description: `Valoración o notas añadidas: ${liveItem.title}`,
+        targetId: liveItem.id,
+        today,
+        now,
+        collections: currentCollections,
+        items: updatedItems,
+      });
+      notifyGamificationResult(gamificationResult);
+    }
   };
 
   const handleDelete = () => {

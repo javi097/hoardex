@@ -18,6 +18,9 @@ import { useCollectionsStore } from '@/features/collections/store/collections.st
 import { CollectionForm } from './CollectionForm';
 import { CollectionIcon } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
+import { useItemsStore } from '@/features/items/store/items.store';
+import { useGamificationStore } from '@/features/gamification/store/gamification.store';
+import { notifyGamificationResult } from '@/features/gamification/core/notifications';
 
 export interface Props {
   open: boolean;
@@ -49,9 +52,27 @@ export function NewCollectionSheet({ open, onOpenChange, onCreated }: Props) {
 
   const handleSubmit = (params: CreateCollectionParams) => {
     try {
-      const newCollection = createCollection(params, new Date().toISOString());
+      const now = new Date().toISOString();
+      const newCollection = createCollection(params, now);
       addCollection(newCollection);
       toast.success(`Colección "${newCollection.name}" creada con éxito.`);
+
+      // Gamificación: registrar acción de crear colección
+      const today = now.slice(0, 10);
+      const updatedCollections = useCollectionsStore.getState().collections;
+      const currentItems = useItemsStore.getState().items;
+
+      const gamificationResult = useGamificationStore.getState().handleUserAction({
+        action: 'create_collection',
+        description: `Creación de colección: ${newCollection.name}`,
+        targetId: newCollection.id,
+        today,
+        now,
+        collections: updatedCollections,
+        items: currentItems,
+      });
+      notifyGamificationResult(gamificationResult);
+
       onOpenChange(false);
       handleResetStep();
       onCreated?.(newCollection.id);

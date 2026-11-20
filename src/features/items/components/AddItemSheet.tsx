@@ -21,6 +21,9 @@ import {
   createItemManual,
 } from '@/features/items/core/items';
 import { useItemsStore } from '@/features/items/store/items.store';
+import { useCollectionsStore } from '@/features/collections/store/collections.store';
+import { useGamificationStore } from '@/features/gamification/store/gamification.store';
+import { notifyGamificationResult } from '@/features/gamification/core/notifications';
 import { cn } from '@/lib/utils';
 
 export interface Props {
@@ -171,16 +174,53 @@ export function AddItemSheet({
   };
 
   const handleAddSearchResult = (result: SearchResult) => {
-    const newItem = createItemFromSearchResult({
+    const now = new Date().toISOString();
+    const isCompleted = Boolean(initialStatus?.isCompleted);
+    const baseItem = createItemFromSearchResult({
       collectionId: collection.id,
       result,
       initialStatusId: initialStatus.id,
-      now: new Date().toISOString(),
+      now,
     });
+    const newItem = {
+      ...baseItem,
+      xpAwarded: isCompleted,
+    };
 
     addItem(newItem);
     setAddedIds((prev) => new Set(prev).add(result.externalId));
     toast.success(`"${result.title}" añadido a ${collection.name}`);
+
+    // Gamificación: registrar adición de ítem
+    const today = now.slice(0, 10);
+    const currentCollections = useCollectionsStore.getState().collections;
+    const updatedItems = useItemsStore.getState().items;
+
+    const addResult = useGamificationStore.getState().handleUserAction({
+      action: 'add_item',
+      description: `Ítem añadido: ${newItem.title}`,
+      targetId: newItem.id,
+      today,
+      now,
+      collections: currentCollections,
+      items: updatedItems,
+    });
+    notifyGamificationResult(addResult);
+
+    // Si se añade directamente en un estado completado, otorgar XP de completado
+    if (isCompleted) {
+      const completeResult = useGamificationStore.getState().handleUserAction({
+        action: 'complete_item',
+        description: `Ítem completado al añadir: ${newItem.title}`,
+        targetId: newItem.id,
+        today,
+        now,
+        collections: currentCollections,
+        items: updatedItems,
+      });
+      notifyGamificationResult(completeResult);
+    }
+
     onAdded?.();
   };
 
@@ -190,18 +230,55 @@ export function AddItemSheet({
     releaseYear?: number;
     coverUrl?: string;
   }) => {
-    const newItem = createItemManual({
+    const now = new Date().toISOString();
+    const isCompleted = Boolean(initialStatus?.isCompleted);
+    const baseItem = createItemManual({
       collectionId: collection.id,
       title: data.title,
       subtitle: data.subtitle,
       releaseYear: data.releaseYear,
       coverUrl: data.coverUrl,
       initialStatusId: initialStatus.id,
-      now: new Date().toISOString(),
+      now,
     });
+    const newItem = {
+      ...baseItem,
+      xpAwarded: isCompleted,
+    };
 
     addItem(newItem);
     toast.success(`"${newItem.title}" añadido a ${collection.name}`);
+
+    // Gamificación: registrar adición de ítem
+    const today = now.slice(0, 10);
+    const currentCollections = useCollectionsStore.getState().collections;
+    const updatedItems = useItemsStore.getState().items;
+
+    const addResult = useGamificationStore.getState().handleUserAction({
+      action: 'add_item',
+      description: `Ítem añadido: ${newItem.title}`,
+      targetId: newItem.id,
+      today,
+      now,
+      collections: currentCollections,
+      items: updatedItems,
+    });
+    notifyGamificationResult(addResult);
+
+    // Si se añade directamente en un estado completado, otorgar XP de completado
+    if (isCompleted) {
+      const completeResult = useGamificationStore.getState().handleUserAction({
+        action: 'complete_item',
+        description: `Ítem completado al añadir: ${newItem.title}`,
+        targetId: newItem.id,
+        today,
+        now,
+        collections: currentCollections,
+        items: updatedItems,
+      });
+      notifyGamificationResult(completeResult);
+    }
+
     onOpenChange(false);
     onAdded?.();
   };

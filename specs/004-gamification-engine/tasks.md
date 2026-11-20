@@ -57,7 +57,7 @@ Este plan de tareas desglosa la implementación de la Fase 3a (`specs/004-gamifi
   - Crear tests unitarios para los componentes creados.
   - Hecho cuando: `npx tsc --noEmit`, `npm run lint` y los tests de componentes pasen sin errores.
 
-- [ ] **T5. Integración de eventos del ciclo de vida y notificaciones toast.** RF-01.1, RF-01.2, RF-04.3, RF-05.3, RNF-03
+- [x] **T5. Integración de eventos del ciclo de vida y notificaciones toast.** RF-01.1, RF-01.2, RF-04.3, RF-05.3, RNF-03
   - Conectar los puntos clave del ciclo de vida con `handleUserAction` de `useGamificationStore`:
     - Creación de colección en `NewCollectionSheet.tsx`.
     - Adición de ítem en `AddItemSheet.tsx`.
@@ -69,7 +69,7 @@ Este plan de tareas desglosa la implementación de la Fase 3a (`specs/004-gamifi
   - Sincronización inicial automática para desbloquear retroactivamente logros en usuarios con catálogo preexistente de fases anteriores sin duplicar XP base.
   - Hecho cuando: las acciones en la app otorguen experiencia, extiendan racha y notifiquen logros sin duplicidades.
 
-- [ ] **T6. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-02, RNF-03, RNF-04, RNF-05
+- [x] **T6. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-02, RNF-03, RNF-04, RNF-05
   - Ejecutar verificación estática completa: `npx tsc --noEmit`, `npm run lint`, `npm run test` (suite completa) y `npm run build`. Confirmar 0 errores, 0 warnings y 0 `any`.
   - Levantar `npm run dev` y validar con Chrome DevTools MCP en `http://localhost:5173/`:
     - Añadir ítem y comprobar concesión de +10 XP y racha de 1 día reflejada en la cabecera.

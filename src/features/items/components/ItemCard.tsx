@@ -4,6 +4,9 @@ import { toast } from 'sonner';
 import type { Item } from '@/interfaces/item.interface';
 import type { CollectionStatus } from '@/interfaces/collection.interface';
 import { useItemsStore } from '@/features/items/store/items.store';
+import { useCollectionsStore } from '@/features/collections/store/collections.store';
+import { useGamificationStore } from '@/features/gamification/store/gamification.store';
+import { notifyGamificationResult } from '@/features/gamification/core/notifications';
 import { CoverImage } from '@/components/custom/CoverImage';
 import { ConfirmDialog } from '@/components/custom/ConfirmDialog';
 import { Button } from '@/components/ui/button';
@@ -45,18 +48,37 @@ export function ItemCard({
   const handleStatusChange = (newStatusId: string) => {
     const targetStatus = statuses.find((s) => s.id === newStatusId);
     const targetIsCompleted = Boolean(targetStatus?.isCompleted);
+    const shouldAwardXp = targetIsCompleted && !item.xpAwarded;
+    const now = new Date().toISOString();
 
     updateItemStatus(
       item.id,
       newStatusId,
       targetIsCompleted,
-      new Date().toISOString()
+      now
     );
 
     if (targetIsCompleted) {
       toast.success(`¡"${item.title}" marcado como completado!`);
     } else {
       toast.info(`Estado de "${item.title}" actualizado a ${targetStatus?.label}`);
+    }
+
+    if (shouldAwardXp) {
+      const today = now.slice(0, 10);
+      const currentCollections = useCollectionsStore.getState().collections;
+      const updatedItems = useItemsStore.getState().items;
+
+      const gamificationResult = useGamificationStore.getState().handleUserAction({
+        action: 'complete_item',
+        description: `Ítem completado: ${item.title}`,
+        targetId: item.id,
+        today,
+        now,
+        collections: currentCollections,
+        items: updatedItems,
+      });
+      notifyGamificationResult(gamificationResult);
     }
   };
 

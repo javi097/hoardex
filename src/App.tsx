@@ -3,8 +3,11 @@ import { Toaster } from 'sonner';
 import { HomePage } from '@/pages/HomePage';
 import { CollectionPage } from '@/pages/CollectionPage';
 import { AchievementsPage } from '@/pages/AchievementsPage';
+import { useGamificationSync } from '@/features/gamification/hooks/useGamificationSync';
 
 function App() {
+  useGamificationSync();
+
   return (
     <BrowserRouter>
       <Routes>

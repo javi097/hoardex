@@ -1,5 +1,5 @@
 # Spec 004 — Gamification Engine (XP, Levels, Streaks & Achievements)
-Estado: aprobada
+Estado: implementada
 
 ---
 
@@ -164,21 +164,21 @@ Esta especificación corresponde a la **Fase 3a: Motor de Gamificación**. Su ob
 
 La spec se considera implementada cuando:
 
-- [ ] Contratos definidos en `src/interfaces/gamification.interface.ts` sin ningún `any`.
-- [ ] Módulo puro `src/features/gamification/core/levels.ts` con curva de XP, cálculo de niveles y títulos honoríficos, con 100% de tests unitarios pasando en `levels.test.ts`.
-- [ ] Módulo puro `src/features/gamification/core/streaks.ts` con cálculo determinista de rachas (mismo día, día consecutivo, racha rota, inicialización), con 100% de tests en `streaks.test.ts`.
-- [ ] Módulo puro `src/features/gamification/core/achievements.ts` con catálogo de logros y evaluador idempotente `evaluateAchievements`, con 100% de tests en `achievements.test.ts`.
-- [ ] Store `src/features/gamification/store/gamification.store.ts` con persistencia en `localStorage` (`hoardex-gamification`) y tests en `gamification.store.test.ts`.
-- [ ] Integración en stores de ítems y colecciones para disparar la concesión de XP y evaluación de logros al añadir, completar o reseñar.
-- [ ] Componente `GamificationHeaderBar` integrado en `Header.tsx` mostrando nivel, XP y racha.
-- [ ] Página `/achievements` (`AchievementsPage.tsx`) con desglose de progreso, estadísticas y cuadrícula de tarjetas de logros.
-- [ ] Notificaciones toast configuradas para subidas de nivel y desbloqueo de logros.
-- [ ] Puerta de calidad estática limpia: `npx tsc --noEmit`, `npm run lint`, `npm run test` y `npm run build` en verde.
-- [ ] Verificación en vivo mediante Chrome DevTools MCP en `http://localhost:5173/`:
-  - [ ] Añadir ítem y verificar incremento de XP e inicio de racha.
-  - [ ] Completar ítem y verificar concesión de XP (+50) y desbloqueo de logro "Primer paso" / "Objetivo cumplido".
-  - [ ] Visualización en cabecera de la barra de nivel y racha.
-  - [ ] Navegación y consulta de logros en `/achievements`.
+- [x] Contratos definidos en `src/interfaces/gamification.interface.ts` sin ningún `any`.
+- [x] Módulo puro `src/features/gamification/core/levels.ts` con curva de XP, cálculo de niveles y títulos honoríficos, con 100% de tests unitarios pasando en `levels.test.ts`.
+- [x] Módulo puro `src/features/gamification/core/streaks.ts` con cálculo determinista de rachas (mismo día, día consecutivo, racha rota, inicialización), con 100% de tests en `streaks.test.ts`.
+- [x] Módulo puro `src/features/gamification/core/achievements.ts` con catálogo de logros y evaluador idempotente `evaluateAchievements`, con 100% de tests en `achievements.test.ts`.
+- [x] Store `src/features/gamification/store/gamification.store.ts` con persistencia en `localStorage` (`hoardex-gamification`) y tests en `gamification.store.test.ts`.
+- [x] Integración en stores de ítems y colecciones para disparar la concesión de XP y evaluación de logros al añadir, completar o reseñar.
+- [x] Componente `GamificationHeaderBar` integrado en `Header.tsx` mostrando nivel, XP y racha.
+- [x] Página `/achievements` (`AchievementsPage.tsx`) con desglose de progreso, estadísticas y cuadrícula de tarjetas de logros.
+- [x] Notificaciones toast configuradas para subidas de nivel y desbloqueo de logros.
+- [x] Puerta de calidad estática limpia: `npx tsc --noEmit`, `npm run lint`, `npm run test` y `npm run build` en verde.
+- [x] Verificación en vivo mediante Chrome DevTools MCP en `http://localhost:5173/`:
+  - [x] Añadir ítem y verificar incremento de XP e inicio de racha.
+  - [x] Completar ítem y verificar concesión de XP (+50) y desbloqueo de logro "Primer paso" / "Objetivo cumplido".
+  - [x] Visualización en cabecera de la barra de nivel y racha.
+  - [x] Navegación y consulta de logros en `/achievements`.
 
 ---
 

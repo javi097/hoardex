@@ -99,6 +99,8 @@ function getBaseActionXp(action: XpActionType, customXp?: number): number {
     return Math.max(0, customXp);
   }
   switch (action) {
+    case 'create_collection':
+      return 0;
     case 'add_item':
       return XP_RULES.ADD_ITEM;
     case 'complete_item':
