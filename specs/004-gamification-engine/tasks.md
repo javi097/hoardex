@@ -14,7 +14,7 @@ Este plan de tareas desglosa la implementación de la Fase 3a (`specs/004-gamifi
   - Extender `Item` en `src/interfaces/item.interface.ts` con el campo opcional `reviewXpAwarded?: boolean` para garantizar idempotencia al reseñar.
   - Hecho cuando: `npx tsc --noEmit` y `npm run lint` pasen limpios con 0 errores y cero `any`.
 
-- [ ] **T2. Capa de lógica pura del Core (niveles, rachas y logros) con suites de tests en Vitest.** RF-01.1, RF-01.3, RF-01.4, RF-02.1, RF-02.2, RF-02.3, RF-02.4, RF-02.5, RF-03.1, RF-03.2, RF-03.3, RNF-01, RNF-04
+- [x] **T2. Capa de lógica pura del Core (niveles, rachas y logros) con suites de tests en Vitest.** RF-01.1, RF-01.3, RF-01.4, RF-02.1, RF-02.2, RF-02.3, RF-02.4, RF-02.5, RF-03.1, RF-03.2, RF-03.3, RNF-01, RNF-04
   - Crear `src/features/gamification/core/levels.ts`:
     - Constante `XP_RULES` (+10 ítem, +50 completado, +25 reseña, +100 colección completa, +15 bono de racha).
     - Títulos honoríficos de rango `LEVEL_TITLES` (niveles 1 al 10+).
