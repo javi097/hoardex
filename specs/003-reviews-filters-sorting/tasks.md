@@ -36,7 +36,7 @@ Este plan de tareas desglosa la implementación de la Fase 2 (`specs/003-reviews
   - Crear `src/features/collections/components/EditCollectionSheet.tsx`: panel lateral que pre-carga los valores de la colección, reutiliza `CollectionForm` (con `hideProvider={true}`), ejecuta `reconcileOrphanItems`, actualiza ítems reasignados en `itemsStore` con toast informativo y guarda los cambios en `collectionsStore`.
   - Hecho cuando: `npx tsc --noEmit` y `npm run lint` pasen con 0 errores.
 
-- [ ] **T6. Integración en `ItemCard.tsx` y `CollectionPage.tsx`.** RF-02.1, RF-03.3, RF-04.1, RF-04.3, RF-04.5, RF-05.1, RF-05.3, RF-06.1, RNF-04
+- [x] **T6. Integración en `ItemCard.tsx` y `CollectionPage.tsx`.** RF-02.1, RF-03.3, RF-04.1, RF-04.3, RF-04.5, RF-05.1, RF-05.3, RF-06.1, RNF-04
   - En `src/features/items/components/ItemCard.tsx`:
     - Añadir distintivo visual de valoración compacta (`★ 4`) en la tarjeta si `item.rating` existe.
     - Implementar disparador accesible (`role="button"`, `tabIndex={0}`, `onKeyDown` con `Enter`/`Space`) en el bloque de portada/información sin anidar elementos `<button>` inválidos en HTML.

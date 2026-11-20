@@ -1,16 +1,39 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
-import { ArrowLeft, Plus, Trash2, PackagePlus } from 'lucide-react';
+import {
+  ArrowLeft,
+  Plus,
+  Trash2,
+  PackagePlus,
+  Pencil,
+  Search,
+  SearchX,
+  X,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { Header } from '@/components/custom/Header';
 import { EmptyState } from '@/components/custom/EmptyState';
 import { ConfirmDialog } from '@/components/custom/ConfirmDialog';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useCollectionsStore } from '@/features/collections/store/collections.store';
 import { useItemsStore } from '@/features/items/store/items.store';
 import { CollectionIcon } from '@/lib/icons';
 import { ItemCard } from '@/features/items/components/ItemCard';
 import { AddItemSheet } from '@/features/items/components/AddItemSheet';
+import { ItemDetailSheet } from '@/features/items/components/ItemDetailSheet';
+import { EditCollectionSheet } from '@/features/collections/components/EditCollectionSheet';
+import {
+  ITEM_SORT_OPTIONS,
+  filterAndSortItems,
+} from '@/features/items/core/sorting';
 import { cn } from '@/lib/utils';
 
 export function CollectionPage() {
@@ -18,18 +41,50 @@ export function CollectionPage() {
   const navigate = useNavigate();
 
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+
+  // Estados de filtros y ordenación
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStatusId, setSelectedStatusId] = useState<string>('all');
+  const [selectedSortId, setSelectedSortId] = useState<string>('createdAt-desc');
 
   const collections = useCollectionsStore((state) => state.collections);
   const collection = collections.find((c) => c.id === id);
   const removeCollection = useCollectionsStore(
     (state) => state.removeCollection
   );
+
   const allItems = useItemsStore((state) => state.items);
   const items = useMemo(
     () => allItems.filter((item) => item.collectionId === id),
     [allItems, id]
   );
+
+  // Obtener ítem seleccionado actualizado en tiempo real desde el store
+  const selectedItem = useMemo(
+    () => allItems.find((i) => i.id === selectedItemId) ?? null,
+    [allItems, selectedItemId]
+  );
+
+  const currentSort = useMemo(
+    () =>
+      ITEM_SORT_OPTIONS.find((s) => s.id === selectedSortId) ??
+      ITEM_SORT_OPTIONS[0],
+    [selectedSortId]
+  );
+
+  const filteredAndSortedItems = useMemo(() => {
+    return filterAndSortItems(
+      items,
+      {
+        query: searchQuery,
+        statusId: selectedStatusId,
+      },
+      currentSort
+    );
+  }, [items, searchQuery, selectedStatusId, currentSort]);
 
   if (!collection) {
     return (
@@ -60,12 +115,18 @@ export function CollectionPage() {
   }).length;
 
   const totalCount = items.length;
-  const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+  const progressPercent =
+    totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
   const handleDeleteCollection = () => {
     removeCollection(collection.id);
     toast.success(`Colección "${collection.name}" y sus ítems eliminados.`);
     navigate('/');
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery('');
+    setSelectedStatusId('all');
   };
 
   return (
@@ -91,16 +152,29 @@ export function CollectionPage() {
               <span>Volver a colecciones</span>
             </Link>
 
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsDeleteConfirmOpen(true)}
-              className="text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-1.5"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              <span>Eliminar colección</span>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditSheetOpen(true)}
+                className="text-xs gap-1.5"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                <span>Editar colección</span>
+              </Button>
+
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsDeleteConfirmOpen(true)}
+                className="text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-1.5"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span>Eliminar</span>
+              </Button>
+            </div>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -152,13 +226,143 @@ export function CollectionPage() {
           </div>
         </div>
 
-        {/* Cuadrícula de ítems */}
-        <div className="mt-8">
+        {/* Barra de herramientas: búsqueda, filtros de estado y ordenación */}
+        {items.length > 0 && (
+          <div className="mt-6 flex flex-col gap-4">
+            {/* Píldoras horizontales de estado con scroll táctil */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+              <button
+                type="button"
+                onClick={() => setSelectedStatusId('all')}
+                className={cn(
+                  'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all shrink-0',
+                  selectedStatusId === 'all'
+                    ? 'bg-foreground text-background shadow-xs'
+                    : 'bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground'
+                )}
+              >
+                <span>Todos</span>
+                <span
+                  className={cn(
+                    'rounded-full px-1.5 py-0.2 text-[10px] font-semibold',
+                    selectedStatusId === 'all'
+                      ? 'bg-background/20 text-background'
+                      : 'bg-background/80 text-foreground'
+                  )}
+                >
+                  {items.length}
+                </span>
+              </button>
+
+              {collection.statuses.map((st) => {
+                const count = items.filter((it) => it.statusId === st.id).length;
+                const isSelected = selectedStatusId === st.id;
+
+                return (
+                  <button
+                    key={st.id}
+                    type="button"
+                    onClick={() => setSelectedStatusId(st.id)}
+                    className={cn(
+                      'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all shrink-0',
+                      isSelected
+                        ? 'text-white shadow-xs'
+                        : 'bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground'
+                    )}
+                    style={
+                      isSelected
+                        ? { backgroundColor: collection.accentColor }
+                        : undefined
+                    }
+                  >
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{
+                        backgroundColor: isSelected
+                          ? '#ffffff'
+                          : collection.accentColor,
+                      }}
+                    />
+                    <span>{st.label}</span>
+                    <span
+                      className={cn(
+                        'rounded-full px-1.5 py-0.2 text-[10px] font-semibold',
+                        isSelected
+                          ? 'bg-white/20 text-white'
+                          : 'bg-background/80 text-foreground'
+                      )}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Fila de búsqueda por texto y selector de ordenación */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Buscar por título o autor/subtítulo..."
+                  className="pl-9 pr-8 h-9 text-xs"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    aria-label="Limpiar búsqueda"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded-xs"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between sm:justify-end gap-3">
+                <span className="text-xs text-muted-foreground whitespace-nowrap">
+                  Mostrando {filteredAndSortedItems.length} de {items.length}{' '}
+                  {items.length === 1 ? 'ítem' : 'ítems'}
+                </span>
+
+                <div className="w-44 sm:w-48 shrink-0">
+                  <Select
+                    value={selectedSortId}
+                    onValueChange={setSelectedSortId}
+                  >
+                    <SelectTrigger
+                      aria-label="Criterio de ordenación"
+                      className="h-9 text-xs"
+                    >
+                      <SelectValue placeholder="Ordenar por" />
+                    </SelectTrigger>
+                    <SelectContent align="end">
+                      {ITEM_SORT_OPTIONS.map((opt) => (
+                        <SelectItem
+                          key={opt.id}
+                          value={opt.id}
+                          className="text-xs"
+                        >
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Contenido principal: vacíos o cuadrícula */}
+        <div className="mt-6">
           {items.length === 0 ? (
             <EmptyState
               icon={<PackagePlus className="h-6 w-6 text-primary" />}
               title="Colección vacía"
-              description="Añade tu primer ítem buscando en el catálogo simulado o mediante alta manual."
+              description="Añade tu primer ítem buscando en el catálogo de proveedores o mediante alta manual."
               action={
                 <Button
                   type="button"
@@ -170,14 +374,32 @@ export function CollectionPage() {
                 </Button>
               }
             />
+          ) : filteredAndSortedItems.length === 0 ? (
+            <EmptyState
+              icon={<SearchX className="h-6 w-6 text-muted-foreground" />}
+              title="Sin resultados"
+              description="No se encontraron ítems que coincidan con los filtros aplicados."
+              action={
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleResetFilters}
+                  className="gap-2 mt-2"
+                >
+                  <span>Restablecer filtros</span>
+                </Button>
+              }
+            />
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-4">
-              {items.map((item) => (
+              {filteredAndSortedItems.map((item) => (
                 <ItemCard
                   key={item.id}
                   item={item}
                   statuses={collection.statuses}
                   accentColor={collection.accentColor}
+                  onSelect={(clicked) => setSelectedItemId(clicked.id)}
                 />
               ))}
             </div>
@@ -190,6 +412,24 @@ export function CollectionPage() {
         collection={collection}
         open={isAddSheetOpen}
         onOpenChange={setIsAddSheetOpen}
+      />
+
+      {/* Sheet para ver y editar detalle del ítem */}
+      <ItemDetailSheet
+        item={selectedItem}
+        collection={collection}
+        open={Boolean(selectedItemId)}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) setSelectedItemId(null);
+        }}
+        onDeleted={() => setSelectedItemId(null)}
+      />
+
+      {/* Sheet para editar colección */}
+      <EditCollectionSheet
+        collection={collection}
+        open={isEditSheetOpen}
+        onOpenChange={setIsEditSheetOpen}
       />
 
       {/* Diálogo de confirmación para eliminar la colección */}
