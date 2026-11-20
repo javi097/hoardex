@@ -8,6 +8,7 @@ export interface Item {
   coverUrl?: string;
   statusId: string;
   xpAwarded: boolean;
+  reviewXpAwarded?: boolean;
   rating?: number;
   notes?: string;
   meta: Record<string, string | number | boolean>;
