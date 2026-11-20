@@ -145,6 +145,7 @@ export interface UpdateItemDetailsPatch {
   rating?: number;
   notes?: string;
   statusId?: string;
+  reviewXpAwarded?: boolean;
 }
 
 export function updateItemDetails(

@@ -30,7 +30,7 @@ Este plan de tareas desglosa la implementación de la Fase 3a (`specs/004-gamifi
     - `src/features/gamification/core/achievements.test.ts` (condiciones de logros, idempotencia con ya desbloqueados).
   - Hecho cuando: `npm run test src/features/gamification/core/` pase al 100% y `tsc`/`lint` pasen limpios.
 
-- [ ] **T3. Store desacoplado de gamificación con persistencia e idempotencia.** RF-01.1, RF-01.2, RF-03.3, RF-04.1, RF-04.2, RF-04.3, RNF-03, RNF-05
+- [x] **T3. Store desacoplado de gamificación con persistencia e idempotencia.** RF-01.1, RF-01.2, RF-03.3, RF-04.1, RF-04.2, RF-04.3, RNF-03, RNF-05
   - Crear `src/features/gamification/store/gamification.store.ts`:
     - Persistencia en `localStorage` bajo `hoardex-gamification`.
     - Estado: `totalXp`, `streak`, `unlockedAchievements`, `xpHistory` y `rewardedCollectionIds: string[]` (salvaguarda anti-duplicados del bono de colección).
