@@ -10,7 +10,7 @@ Este plan de tareas desglosa la implementación de la Fase 2 (`specs/003-reviews
   - Definir tipos contractuales `ItemSortField`, `SortDirection`, `ItemSortOption` e `ItemFilters`.
   - Hecho cuando: `npx tsc --noEmit` y `npm run lint` pasen con 0 errores y cero `any`.
 
-- [ ] **T2. Lógica pura de filtrado, ordenación y reconciliación de estados huérfanos con suites de tests.** RF-04.2, RF-04.4, RF-05.1, RF-05.2, RF-06.5, RF-06.6, RNF-01
+- [x] **T2. Lógica pura de filtrado, ordenación y reconciliación de estados huérfanos con suites de tests.** RF-04.2, RF-04.4, RF-05.1, RF-05.2, RF-06.5, RF-06.6, RNF-01
   - Crear `src/features/items/core/sorting.ts`: función pura `normalizeText` (búsqueda insensible a tildes/mayúsculas con NFD), `filterAndSortItems` implementando filtrado por query y estado junto con los 7 criterios de ordenación (situando valores ausentes de año y rating al final), `updateItemDetails` y la constante `ITEM_SORT_OPTIONS`.
   - Crear `src/features/collections/core/reconciliation.ts`: función pura `reconcileOrphanItems` que detecta ítems en estados eliminados de una colección y los reasigna de forma segura al primer estado (menor `order`), actualizando `isCompleted` e idempotencia de XP.
   - Crear `src/features/items/core/sorting.test.ts` y `src/features/collections/core/reconciliation.test.ts` cubriendo todos los casos de filtrado, ordenación, diacríticos, huérfanos y casos límite.
