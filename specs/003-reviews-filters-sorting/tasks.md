@@ -23,7 +23,7 @@ Este plan de tareas desglosa la implementación de la Fase 2 (`specs/003-reviews
   - Actualizar `src/features/items/store/items.store.test.ts` con tests específicos para las nuevas acciones.
   - Hecho cuando: `npm run test src/features/items/store/items.store.test.ts` pase al 100% y `tsc`/`lint` pasen limpios.
 
-- [ ] **T4. Componente accesible de valoración por estrellas y suite de pruebas.** RF-03.1, RF-03.2, RNF-04
+- [x] **T4. Componente accesible de valoración por estrellas y suite de pruebas.** RF-03.1, RF-03.2, RNF-04
   - Crear `src/components/custom/StarRating.tsx` con soporte para 1–5 estrellas:
     - Modo interactivo: teclado (`Enter`/`Space`), clic, `aria-label`, y desmarcado a `undefined` al pulsar la estrella activa.
     - Modo solo lectura (`readonly: true`) y tamaños configurables (`sm`, `md`, `lg`).
