@@ -40,7 +40,7 @@ Este plan de tareas desglosa la implementación de la Fase 3a (`specs/004-gamifi
   - Crear `src/features/gamification/store/gamification.store.test.ts` probando concesión de XP, avance de racha, desbloqueo de logros, salvaguarda de colecciones y persistencia defensiva.
   - Hecho cuando: `npm run test src/features/gamification/store/` pase al 100% y la suite completa continúe en verde.
 
-- [ ] **T4. Componentes UI de Gamificación y página `/achievements`.** RF-03.1, RF-05.1, RF-05.2, RNF-05
+- [x] **T4. Componentes UI de Gamificación y página `/achievements`.** RF-03.1, RF-05.1, RF-05.2, RNF-05
   - Crear `src/features/gamification/components/GamificationHeaderBar.tsx`:
     - Insignia de nivel con icono y tooltip de rango honorífico.
     - Mini barra de progreso porcentual al siguiente nivel.

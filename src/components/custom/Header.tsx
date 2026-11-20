@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { Moon, Sun, Layers } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/components/ui/button';
+import { GamificationHeaderBar } from '@/features/gamification/components/GamificationHeaderBar';
 
 export interface Props {
   className?: string;
@@ -29,7 +30,9 @@ export function Header({ className }: Props) {
           </span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <GamificationHeaderBar />
+
           <Button
             variant="ghost"
             size="icon"
@@ -52,3 +55,4 @@ export function Header({ className }: Props) {
     </header>
   );
 }
+
