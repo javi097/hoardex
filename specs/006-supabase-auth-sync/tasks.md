@@ -35,7 +35,7 @@
     - Crear `backup.test.ts` probando archivos legítimos, rechazo de versiones inválidas y payloads corruptos.
   - Hecho cuando: `npm run test src/features/sync/core/` pase al 100%.
 
-- [ ] **T3. Store de sincronización e hidratación atómica en stores de dominio.** RF-01.3, RF-04.2, RF-05.3, RNF-02
+- [x] **T3. Store de sincronización e hidratación atómica en stores de dominio.** RF-01.3, RF-04.2, RF-05.3, RNF-02
   - Crear `src/features/sync/store/sync.store.ts`:
     - Estado: `user: User | null`, `syncStatus: SyncStatus`, `lastSyncedAt: string | null`, `pendingDeletionIds: { collectionIds: string[]; itemIds: string[] }`.
     - Acciones: `setUser(user)`, `setSyncStatus(status)`, `setLastSyncedAt(timestamp)`, `trackDeletedCollection(id)`, `trackDeletedItem(id)`, `clearPendingDeletions()`, `resetSyncState()`.

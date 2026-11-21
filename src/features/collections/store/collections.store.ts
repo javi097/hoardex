@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Collection } from '@/interfaces/collection.interface';
 import { useItemsStore } from '@/features/items/store/items.store';
+import { useSyncStore } from '@/features/sync/store/sync.store';
 
 export interface CollectionsState {
   collections: Collection[];
@@ -11,6 +12,7 @@ export interface CollectionsState {
     id: string,
     patch: Partial<Omit<Collection, 'id' | 'createdAt'>>
   ) => void;
+  hydrateCollections: (collections: Collection[]) => void;
 }
 
 export const useCollectionsStore = create<CollectionsState>()(
@@ -26,6 +28,7 @@ export const useCollectionsStore = create<CollectionsState>()(
       removeCollection: (id) => {
         // Cascada: elimina todos los ítems huérfanos asociados a la colección
         useItemsStore.getState().removeItemsByCollection(id);
+        useSyncStore.getState().trackDeletedCollection(id);
 
         set((state) => ({
           collections: state.collections.filter((col) => col.id !== id),
@@ -38,6 +41,11 @@ export const useCollectionsStore = create<CollectionsState>()(
             col.id === id ? { ...col, ...patch } : col
           ),
         })),
+
+      hydrateCollections: (collections) =>
+        set({
+          collections: Array.isArray(collections) ? collections : [],
+        }),
     }),
     {
       name: 'hoardex-collections',

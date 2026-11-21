@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useItemsStore } from './items.store';
+import { useSyncStore } from '@/features/sync/store/sync.store';
 import type { Item } from '@/interfaces/item.interface';
 
 describe('useItemsStore', () => {
   beforeEach(() => {
     useItemsStore.setState({ items: [] });
+    useSyncStore.getState().resetSyncState();
   });
 
   const sampleItem: Item = {
@@ -24,13 +26,14 @@ describe('useItemsStore', () => {
     expect(useItemsStore.getState().items[0]).toEqual(sampleItem);
   });
 
-  it('removes an item by id', () => {
+  it('removes an item by id and tracks deleted id in sync store', () => {
     useItemsStore.getState().addItem(sampleItem);
     useItemsStore.getState().removeItem('it-1');
     expect(useItemsStore.getState().items).toHaveLength(0);
+    expect(useSyncStore.getState().pendingDeletionIds.itemIds).toContain('it-1');
   });
 
-  it('removes multiple items by collectionId', () => {
+  it('removes multiple items by collectionId and tracks all deleted ids', () => {
     const item2: Item = {
       ...sampleItem,
       id: 'it-2',
@@ -51,6 +54,9 @@ describe('useItemsStore', () => {
 
     expect(useItemsStore.getState().items).toHaveLength(1);
     expect(useItemsStore.getState().items[0].id).toBe('it-3');
+    expect(useSyncStore.getState().pendingDeletionIds.itemIds).toEqual(
+      expect.arrayContaining(['it-1', 'it-2'])
+    );
   });
 
   it('updates item status delegating to changeItemStatus with idempotency', () => {
@@ -143,5 +149,33 @@ describe('useItemsStore', () => {
     expect(updatedB.xpAwarded).toBe(true);
 
     expect(untouchedC.statusId).toBe('st-untouched');
+  });
+
+  describe('hydrateItems', () => {
+    it('replaces items atomically and defensively', () => {
+      useItemsStore.getState().addItem(sampleItem);
+      expect(useItemsStore.getState().items).toHaveLength(1);
+
+      const remoteItems: Item[] = [
+        {
+          id: 'it-remote-1',
+          collectionId: 'col-1',
+          title: 'Metroid Prime',
+          statusId: 'st-completed',
+          xpAwarded: true,
+          meta: {},
+          createdAt: '2026-11-20T10:00:00.000Z',
+          updatedAt: '2026-11-20T10:00:00.000Z',
+        },
+      ];
+
+      useItemsStore.getState().hydrateItems(remoteItems);
+      expect(useItemsStore.getState().items).toEqual(remoteItems);
+    });
+
+    it('handles non-array input defensively without throwing', () => {
+      useItemsStore.getState().hydrateItems(null as unknown as Item[]);
+      expect(useItemsStore.getState().items).toEqual([]);
+    });
   });
 });

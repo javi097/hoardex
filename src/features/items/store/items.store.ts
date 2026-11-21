@@ -6,6 +6,7 @@ import {
   updateItemDetails,
   type UpdateItemDetailsPatch,
 } from '@/features/items/core/sorting';
+import { useSyncStore } from '@/features/sync/store/sync.store';
 
 export interface ItemsState {
   items: Item[];
@@ -26,6 +27,7 @@ export interface ItemsState {
     now: string
   ) => void;
   setItems: (items: Item[]) => void;
+  hydrateItems: (items: Item[]) => void;
 }
 
 export const useItemsStore = create<ItemsState>()(
@@ -38,17 +40,27 @@ export const useItemsStore = create<ItemsState>()(
           items: [...state.items, item],
         })),
 
-      removeItem: (id) =>
+      removeItem: (id) => {
+        useSyncStore.getState().trackDeletedItem(id);
         set((state) => ({
           items: state.items.filter((item) => item.id !== id),
-        })),
+        }));
+      },
 
       removeItemsByCollection: (collectionId) =>
-        set((state) => ({
-          items: state.items.filter(
-            (item) => item.collectionId !== collectionId
-          ),
-        })),
+        set((state) => {
+          const removed = state.items.filter(
+            (item) => item.collectionId === collectionId
+          );
+          for (const item of removed) {
+            useSyncStore.getState().trackDeletedItem(item.id);
+          }
+          return {
+            items: state.items.filter(
+              (item) => item.collectionId !== collectionId
+            ),
+          };
+        }),
 
       updateItemStatus: (itemId, newStatusId, isCompleted, now) =>
         set((state) => ({
@@ -78,6 +90,9 @@ export const useItemsStore = create<ItemsState>()(
       },
 
       setItems: (items) => set({ items }),
+
+      hydrateItems: (items) =>
+        set({ items: Array.isArray(items) ? items : [] }),
     }),
     {
       name: 'hoardex-items',

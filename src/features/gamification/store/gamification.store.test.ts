@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useGamificationStore } from './gamification.store';
+import type { PersistedGamificationData } from '@/interfaces/sync.interface';
 
 describe('gamification.store', () => {
   beforeEach(() => {
@@ -310,6 +311,70 @@ describe('gamification.store', () => {
       useGamificationStore.getState().resetGamification();
       expect(useGamificationStore.getState().claimedChallengeIds).toEqual([]);
       expect(useGamificationStore.getState().totalXp).toBe(0);
+    });
+  });
+
+  describe('hydrateGamification', () => {
+    it('hydrates complete gamification state correctly', () => {
+      const persisted = {
+        totalXp: 350,
+        streak: {
+          currentStreak: 5,
+          longestStreak: 12,
+          lastActivityDate: '2026-11-20',
+          isActiveToday: true,
+        },
+        unlockedAchievements: [
+          { achievementId: 'first_item', unlockedAt: '2026-11-18T12:00:00.000Z' },
+        ],
+        xpHistory: [
+          {
+            id: 'ev-1',
+            action: 'add_item' as const,
+            xpGained: 10,
+            description: 'Item 1',
+            timestamp: '2026-11-20T10:00:00.000Z',
+          },
+        ],
+        rewardedCollectionIds: ['col-1'],
+        claimedChallengeIds: ['weekly_1'],
+      };
+
+      useGamificationStore.getState().hydrateGamification(persisted);
+
+      const state = useGamificationStore.getState();
+      expect(state.totalXp).toBe(350);
+      expect(state.streak).toEqual(persisted.streak);
+      expect(state.unlockedAchievements).toEqual(persisted.unlockedAchievements);
+      expect(state.xpHistory).toEqual(persisted.xpHistory);
+      expect(state.rewardedCollectionIds).toEqual(['col-1']);
+      expect(state.claimedChallengeIds).toEqual(['weekly_1']);
+    });
+
+    it('sanitizes malformed and partial data defensively', () => {
+      const corrupted = {
+        totalXp: -50,
+        streak: null,
+        unlockedAchievements: 'invalid',
+        xpHistory: null,
+        rewardedCollectionIds: undefined,
+        claimedChallengeIds: [123, 'valid_id', null],
+      } as unknown as PersistedGamificationData;
+
+      useGamificationStore.getState().hydrateGamification(corrupted);
+
+      const state = useGamificationStore.getState();
+      expect(state.totalXp).toBe(0);
+      expect(state.streak).toEqual({
+        currentStreak: 0,
+        longestStreak: 0,
+        lastActivityDate: null,
+        isActiveToday: false,
+      });
+      expect(state.unlockedAchievements).toEqual([]);
+      expect(state.xpHistory).toEqual([]);
+      expect(state.rewardedCollectionIds).toEqual([]);
+      expect(state.claimedChallengeIds).toEqual(['valid_id']);
     });
   });
 });

@@ -8,6 +8,7 @@ import type {
   XpActionType,
   XpEvent,
 } from '@/interfaces/gamification.interface';
+import type { PersistedGamificationData } from '@/interfaces/sync.interface';
 import { calculateLevelProgress, XP_RULES } from '../core/levels';
 import { calculateStreak } from '../core/streaks';
 import { evaluateAchievements } from '../core/achievements';
@@ -94,6 +95,7 @@ export interface GamificationState {
     now: string,
     targetId?: string
   ) => void;
+  hydrateGamification: (data: PersistedGamificationData) => void;
   resetGamification: () => void;
 }
 
@@ -477,6 +479,40 @@ export const useGamificationStore = create<GamificationState>()(
             totalXp: newTotalXp,
             xpHistory: [event, ...state.xpHistory].slice(0, 50),
           };
+        });
+      },
+
+      hydrateGamification: (data) => {
+        set({
+          totalXp:
+            typeof data?.totalXp === 'number' && !isNaN(data.totalXp)
+              ? Math.max(0, data.totalXp)
+              : 0,
+          streak: {
+            currentStreak:
+              typeof data?.streak?.currentStreak === 'number'
+                ? Math.max(0, data.streak.currentStreak)
+                : 0,
+            longestStreak:
+              typeof data?.streak?.longestStreak === 'number'
+                ? Math.max(0, data.streak.longestStreak)
+                : 0,
+            lastActivityDate:
+              typeof data?.streak?.lastActivityDate === 'string'
+                ? data.streak.lastActivityDate
+                : null,
+            isActiveToday: Boolean(data?.streak?.isActiveToday),
+          },
+          unlockedAchievements: Array.isArray(data?.unlockedAchievements)
+            ? data.unlockedAchievements
+            : [],
+          xpHistory: Array.isArray(data?.xpHistory) ? data.xpHistory : [],
+          rewardedCollectionIds: Array.isArray(data?.rewardedCollectionIds)
+            ? data.rewardedCollectionIds
+            : [],
+          claimedChallengeIds: Array.isArray(data?.claimedChallengeIds)
+            ? data.claimedChallengeIds.filter((id) => typeof id === 'string')
+            : [],
         });
       },
 
