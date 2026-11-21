@@ -16,7 +16,7 @@ Este plan de tareas desglosa la implementación de la Fase 3b (`specs/005-achiev
     - Definir `CollectorStats` (`totalItems`, `completedItems`, `completionRate`, `ratedItemsCount`, `averageRating`, `reviewedItemsCount`, `totalCollections`, `mostActiveCollection`).
   - Hecho cuando: `npx tsc --noEmit` y `npm run lint` pasen con 0 errores y cero ocurrencias de `any`.
 
-- [ ] **T2. Capa Core: Retos declarativos y cálculo de semanas ISO.** RF-01.1, RF-01.2, RF-01.3, RNF-01, RNF-05
+- [x] **T2. Capa Core: Retos declarativos y cálculo de semanas ISO.** RF-01.1, RF-01.2, RF-01.3, RNF-01, RNF-05
   - Crear `src/features/gamification/core/challenges.ts`:
     - Función pura `getWeekBoundaries(dateStr)`: cálculo matemático determinista en UTC del inicio (lunes), fin (domingo) y clave ISO (`YYYY-Www`) sin `Date.now()`.
     - Catálogo declarativo `CHALLENGES` con 6 retos base (3 semanales: añadir 2 ítems, completar 1 ítem, reseñar 1 ítem; 3 de hito: 2 colecciones, 3 valoraciones con estrellas, racha récord de 3 días).
@@ -29,7 +29,7 @@ Este plan de tareas desglosa la implementación de la Fase 3b (`specs/005-achiev
     - Idempotencia del indicador `isClaimed`.
   - Hecho cuando: `npm run test src/features/gamification/core/challenges.test.ts` pase al 100% y `tsc`/`lint` continúen limpios.
 
-- [ ] **T3. Capa Core: Métricas y analíticas del coleccionista.** RF-04.1, RNF-01, RNF-05
+- [x] **T3. Capa Core: Métricas y analíticas del coleccionista.** RF-04.1, RNF-01, RNF-05
   - Crear `src/features/gamification/core/stats.ts`:
     - Función pura `calculateCollectorStats(collections, items)`:
       - Tasa global de completado (`Math.round((completed / total) * 100)` o 0 si total es 0).
