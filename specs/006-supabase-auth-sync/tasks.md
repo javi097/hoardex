@@ -20,7 +20,7 @@
     - Índices de rendimiento (`idx_collections_user_id`, `idx_items_user_id`, `idx_items_collection_id`, `idx_items_updated_at`).
   - Hecho cuando: `npx tsc --noEmit` y `npm run build` compilen sin errores con cero `any`.
 
-- [ ] **T2. Capa Core: Mappers, conciliación LWW y generador/validador de backups.** RF-04.1, RF-05.1, RF-05.2, RF-05.3, RNF-03
+- [x] **T2. Capa Core: Mappers, conciliación LWW y generador/validador de backups.** RF-04.1, RF-05.1, RF-05.2, RF-05.3, RNF-03
   - Crear `src/features/sync/core/mappers.ts`:
     - Funciones puras de transformación `mapCollectionRowToCollection`, `mapCollectionToRow`, `mapItemRowToItem`, `mapItemToRow`, `mapGamificationRowToState` y `mapGamificationStateToRow`.
     - Usar `updatedAt ?? createdAt` como fallback defensivo en `Collection`.
