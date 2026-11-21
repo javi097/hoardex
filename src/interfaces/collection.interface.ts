@@ -16,6 +16,7 @@ export interface Collection {
   provider: ProviderType;
   statuses: CollectionStatus[];
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface CollectionTemplate {
