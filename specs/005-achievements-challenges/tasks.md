@@ -42,7 +42,7 @@ Este plan de tareas desglosa la implementación de la Fase 3b (`specs/005-achiev
     - Empate en tamaño de colecciones y recuento exacto de completados.
   - Hecho cuando: `npm run test src/features/gamification/core/stats.test.ts` pase al 100%.
 
-- [ ] **T4. Capa Store: Reclamación idempotente de retos y pureza.** RF-02.1, RF-02.2, RF-02.3, RNF-03
+- [x] **T4. Capa Store: Reclamación idempotente de retos y pureza.** RF-02.1, RF-02.2, RF-02.3, RNF-03
   - En `src/features/gamification/store/gamification.store.ts`:
     - Ampliar el estado con `claimedChallengeIds: string[]` persistido bajo `hoardex-gamification`.
     - Implementar la acción pura `claimChallengeReward(params: { uniqueKey: string; xpReward: number; title: string; now: string; isCompleted: boolean })`:

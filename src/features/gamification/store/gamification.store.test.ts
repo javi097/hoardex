@@ -16,6 +16,7 @@ describe('gamification.store', () => {
     expect(state.unlockedAchievements).toEqual([]);
     expect(state.xpHistory).toEqual([]);
     expect(state.rewardedCollectionIds).toEqual([]);
+    expect(state.claimedChallengeIds).toEqual([]);
   });
 
   describe('handleUserAction', () => {
@@ -204,6 +205,111 @@ describe('gamification.store', () => {
       useGamificationStore.getState().awardXp('add_item', -20, 'Negativo', '2026-11-20T10:00:00.000Z');
       expect(useGamificationStore.getState().totalXp).toBe(0);
       expect(useGamificationStore.getState().xpHistory).toHaveLength(0);
+    });
+  });
+
+  describe('claimChallengeReward', () => {
+    it('successfully claims reward when completed and not yet claimed', () => {
+      const result = useGamificationStore.getState().claimChallengeReward({
+        uniqueKey: 'weekly_add_items_2026-W47',
+        xpReward: 30,
+        title: 'Añadir 2 ítems',
+        now: '2026-11-20T10:00:00.000Z',
+        isCompleted: true,
+      });
+
+      expect(result.totalXpGained).toBe(30);
+      expect(result.baseXpGained).toBe(30);
+      expect(result.leveledUp).toBe(false);
+
+      const state = useGamificationStore.getState();
+      expect(state.totalXp).toBe(30);
+      expect(state.claimedChallengeIds).toEqual(['weekly_add_items_2026-W47']);
+      expect(state.xpHistory).toHaveLength(1);
+      expect(state.xpHistory[0]).toMatchObject({
+        action: 'challenge',
+        xpGained: 30,
+        description: 'Reto completado: Añadir 2 ítems',
+        targetId: 'weekly_add_items_2026-W47',
+        timestamp: '2026-11-20T10:00:00.000Z',
+      });
+    });
+
+    it('rejects claim if isCompleted is false', () => {
+      const result = useGamificationStore.getState().claimChallengeReward({
+        uniqueKey: 'weekly_add_items_2026-W47',
+        xpReward: 30,
+        title: 'Añadir 2 ítems',
+        now: '2026-11-20T10:00:00.000Z',
+        isCompleted: false,
+      });
+
+      expect(result.totalXpGained).toBe(0);
+      const state = useGamificationStore.getState();
+      expect(state.totalXp).toBe(0);
+      expect(state.claimedChallengeIds).toEqual([]);
+      expect(state.xpHistory).toEqual([]);
+    });
+
+    it('is strictly idempotent and rejects duplicate claims for same uniqueKey', () => {
+      // Primera reclamación
+      const firstResult = useGamificationStore.getState().claimChallengeReward({
+        uniqueKey: 'milestone_collections',
+        xpReward: 50,
+        title: 'Curador novato',
+        now: '2026-11-20T10:00:00.000Z',
+        isCompleted: true,
+      });
+      expect(firstResult.totalXpGained).toBe(50);
+      expect(useGamificationStore.getState().totalXp).toBe(50);
+
+      // Segunda reclamación idéntica
+      const secondResult = useGamificationStore.getState().claimChallengeReward({
+        uniqueKey: 'milestone_collections',
+        xpReward: 50,
+        title: 'Curador novato',
+        now: '2026-11-20T11:00:00.000Z',
+        isCompleted: true,
+      });
+      expect(secondResult.totalXpGained).toBe(0);
+      expect(useGamificationStore.getState().totalXp).toBe(50);
+      expect(useGamificationStore.getState().claimedChallengeIds).toHaveLength(1);
+      expect(useGamificationStore.getState().xpHistory).toHaveLength(1);
+    });
+
+    it('triggers leveledUp when challenge XP crosses the level boundary', () => {
+      // Añadir 80 XP previamente (Nivel 1 termina en 100 XP)
+      useGamificationStore.getState().awardXp('add_item', 80, 'Base', '2026-11-20T09:00:00.000Z');
+      expect(useGamificationStore.getState().totalXp).toBe(80);
+
+      const result = useGamificationStore.getState().claimChallengeReward({
+        uniqueKey: 'weekly_complete_item_2026-W47',
+        xpReward: 40,
+        title: 'Meta semanal',
+        now: '2026-11-20T10:00:00.000Z',
+        isCompleted: true,
+      });
+
+      expect(result.totalXpGained).toBe(40);
+      expect(result.leveledUp).toBe(true);
+      expect(result.previousLevel).toBe(1);
+      expect(result.newLevel).toBe(2);
+      expect(useGamificationStore.getState().totalXp).toBe(120);
+    });
+
+    it('resets claimedChallengeIds when resetGamification is invoked', () => {
+      useGamificationStore.getState().claimChallengeReward({
+        uniqueKey: 'weekly_review_item_2026-W47',
+        xpReward: 25,
+        title: 'Crítica constructiva',
+        now: '2026-11-20T10:00:00.000Z',
+        isCompleted: true,
+      });
+      expect(useGamificationStore.getState().claimedChallengeIds).toHaveLength(1);
+
+      useGamificationStore.getState().resetGamification();
+      expect(useGamificationStore.getState().claimedChallengeIds).toEqual([]);
+      expect(useGamificationStore.getState().totalXp).toBe(0);
     });
   });
 });

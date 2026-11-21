@@ -113,6 +113,7 @@ export interface ChallengeEvaluationState {
     reviewXpAwarded?: boolean;
     createdAt: string;
     updatedAt: string;
+    meta?: Record<string, unknown>;
   }[];
   xpHistory: XpEvent[];
   totalXp: number;

@@ -67,16 +67,26 @@ export interface SyncAchievementsParams {
   }[];
 }
 
+export interface ClaimChallengeRewardParams {
+  uniqueKey: string;
+  xpReward: number;
+  title: string;
+  now: string;
+  isCompleted: boolean;
+}
+
 export interface GamificationState {
   totalXp: number;
   streak: StreakInfo;
   unlockedAchievements: UnlockedAchievement[];
   xpHistory: XpEvent[];
   rewardedCollectionIds: string[];
+  claimedChallengeIds: string[];
 
   // Acciones
   handleUserAction: (params: UserActionParams) => ActionResult;
   syncAchievements: (params: SyncAchievementsParams) => ActionResult;
+  claimChallengeReward: (params: ClaimChallengeRewardParams) => ActionResult;
   awardXp: (
     action: XpActionType,
     amount: number,
@@ -112,6 +122,7 @@ function getBaseActionXp(action: XpActionType, customXp?: number): number {
     case 'daily_streak':
       return XP_RULES.DAILY_STREAK_BONUS;
     case 'achievement':
+    case 'challenge':
     default:
       return 0;
   }
@@ -125,6 +136,7 @@ export const useGamificationStore = create<GamificationState>()(
       unlockedAchievements: [],
       xpHistory: [],
       rewardedCollectionIds: [],
+      claimedChallengeIds: [],
 
       handleUserAction: (params) => {
         const state = get();
@@ -383,6 +395,70 @@ export const useGamificationStore = create<GamificationState>()(
         };
       },
 
+      claimChallengeReward: (params) => {
+        const state = get();
+        const currentProgress = calculateLevelProgress(state.totalXp);
+
+        // Validación dual: debe estar completado y NO estar ya reclamado
+        if (
+          !params.isCompleted ||
+          state.claimedChallengeIds.includes(params.uniqueKey)
+        ) {
+          return {
+            totalXpGained: 0,
+            baseXpGained: 0,
+            streakBonusXp: 0,
+            collectionBonusXp: 0,
+            achievementBonusXp: 0,
+            leveledUp: false,
+            previousLevel: currentProgress.level,
+            newLevel: currentProgress.level,
+            newLevelTitle: currentProgress.title,
+            newlyUnlockedAchievements: [],
+            streakExtended: false,
+            currentStreak: state.streak.currentStreak,
+          };
+        }
+
+        const safeReward = Math.max(0, Math.floor(params.xpReward));
+        const finalXp = state.totalXp + safeReward;
+        const finalProgress = calculateLevelProgress(finalXp);
+        const leveledUp = finalProgress.level > currentProgress.level;
+
+        const newEvent: XpEvent = {
+          id: crypto.randomUUID(),
+          action: 'challenge',
+          xpGained: safeReward,
+          description: `Reto completado: ${params.title}`,
+          targetId: params.uniqueKey,
+          timestamp: params.now,
+        };
+
+        const newXpHistory = [newEvent, ...state.xpHistory].slice(0, 50);
+        const newClaimedIds = [...state.claimedChallengeIds, params.uniqueKey];
+
+        set({
+          totalXp: finalXp,
+          claimedChallengeIds: newClaimedIds,
+          xpHistory: newXpHistory,
+        });
+
+        return {
+          totalXpGained: safeReward,
+          baseXpGained: safeReward,
+          streakBonusXp: 0,
+          collectionBonusXp: 0,
+          achievementBonusXp: 0,
+          leveledUp,
+          previousLevel: currentProgress.level,
+          newLevel: finalProgress.level,
+          newLevelTitle: finalProgress.title,
+          newlyUnlockedAchievements: [],
+          streakExtended: false,
+          currentStreak: state.streak.currentStreak,
+        };
+      },
+
       awardXp: (action, amount, description, now, targetId) => {
         const safeAmount = Math.max(0, Math.floor(amount));
         if (safeAmount === 0) return;
@@ -411,6 +487,7 @@ export const useGamificationStore = create<GamificationState>()(
           unlockedAchievements: [],
           xpHistory: [],
           rewardedCollectionIds: [],
+          claimedChallengeIds: [],
         });
       },
     }),
@@ -422,6 +499,7 @@ export const useGamificationStore = create<GamificationState>()(
         unlockedAchievements: state.unlockedAchievements,
         xpHistory: state.xpHistory,
         rewardedCollectionIds: state.rewardedCollectionIds,
+        claimedChallengeIds: state.claimedChallengeIds,
       }),
       merge: (persistedState, currentState) => {
         const persisted = persistedState as
@@ -460,6 +538,11 @@ export const useGamificationStore = create<GamificationState>()(
             persisted?.rewardedCollectionIds
           )
             ? persisted.rewardedCollectionIds
+            : [],
+          claimedChallengeIds: Array.isArray(persisted?.claimedChallengeIds)
+            ? persisted.claimedChallengeIds.filter(
+                (id) => typeof id === 'string'
+              )
             : [],
         };
       },
