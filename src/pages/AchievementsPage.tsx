@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, type ComponentType, type KeyboardEvent } from 'react';
 import { Link } from 'react-router';
+import { toast } from 'sonner';
 import {
   ArrowLeft,
   Trophy,
@@ -10,18 +11,36 @@ import {
   CheckCircle2,
   MessageSquareText,
   Zap,
+  BarChart3,
+  History,
+  Target,
+  type LucideProps,
 } from 'lucide-react';
 import { Header } from '@/components/custom/Header';
 import { useGamificationStore } from '@/features/gamification/store/gamification.store';
+import { useCollectionsStore } from '@/features/collections/store/collections.store';
+import { useItemsStore } from '@/features/items/store/items.store';
 import { calculateLevelProgress } from '@/features/gamification/core/levels';
 import { ACHIEVEMENTS } from '@/features/gamification/core/achievements';
+import {
+  CHALLENGES,
+  evaluateAllChallenges,
+  getWeekBoundaries,
+} from '@/features/gamification/core/challenges';
+import { calculateCollectorStats } from '@/features/gamification/core/stats';
+import { notifyGamificationResult } from '@/features/gamification/core/notifications';
 import { AchievementCard } from '@/features/gamification/components/AchievementCard';
+import { ChallengeCard } from '@/features/gamification/components/ChallengeCard';
+import { CollectorStatsPanel } from '@/features/gamification/components/CollectorStatsPanel';
+import { XpHistoryFeed } from '@/features/gamification/components/XpHistoryFeed';
 import type {
   AchievementCategory,
+  ChallengeProgress,
   UnlockedAchievement,
 } from '@/interfaces/gamification.interface';
 import { cn } from '@/lib/utils';
 
+type ActiveTab = 'achievements' | 'challenges' | 'stats' | 'history';
 type FilterCategory = 'all' | AchievementCategory;
 
 interface CategoryFilterOption {
@@ -40,22 +59,39 @@ const CATEGORY_OPTIONS: CategoryFilterOption[] = [
 ];
 
 export function AchievementsPage() {
+  const [activeTab, setActiveTab] = useState<ActiveTab>('achievements');
   const [selectedCategory, setSelectedCategory] =
     useState<FilterCategory>('all');
 
+  // Stores
   const totalXp = useGamificationStore((state) => state.totalXp);
   const streak = useGamificationStore((state) => state.streak);
   const unlockedAchievements = useGamificationStore(
     (state) => state.unlockedAchievements
   );
+  const xpHistory = useGamificationStore((state) => state.xpHistory);
+  const claimedChallengeIds = useGamificationStore(
+    (state) => state.claimedChallengeIds
+  );
+  const claimChallengeReward = useGamificationStore(
+    (state) => state.claimChallengeReward
+  );
 
+  const collections = useCollectionsStore((state) => state.collections);
+  const items = useItemsStore((state) => state.items);
+
+  // Fecha y límites de semana
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const boundaries = useMemo(() => getWeekBoundaries(today), [today]);
+
+  // Nivel y progreso
   const progress = calculateLevelProgress(totalXp);
   const unlockedCount = unlockedAchievements.length;
   const totalCount = ACHIEVEMENTS.length;
   const overallPercentage =
     totalCount > 0 ? Math.round((unlockedCount / totalCount) * 100) : 0;
 
-  // Mapa rápido de logros desbloqueados por id
+  // Mapa de logros desbloqueados
   const unlockedMap = useMemo(() => {
     const map = new Map<string, UnlockedAchievement>();
     for (const item of unlockedAchievements) {
@@ -64,7 +100,7 @@ export function AchievementsPage() {
     return map;
   }, [unlockedAchievements]);
 
-  // Contadores por categoría
+  // Contadores por categoría de logros
   const categoryCounts = useMemo(() => {
     const counts: Record<FilterCategory, { total: number; unlocked: number }> = {
       all: { total: totalCount, unlocked: unlockedCount },
@@ -94,6 +130,100 @@ export function AchievementsPage() {
     }
     return ACHIEVEMENTS.filter((ach) => ach.category === selectedCategory);
   }, [selectedCategory]);
+
+  // Evaluación de retos
+  const challengeProgresses = useMemo(() => {
+    return evaluateAllChallenges(
+      CHALLENGES,
+      {
+        collections,
+        items,
+        xpHistory,
+        totalXp,
+        streak,
+        claimedChallengeIds,
+      },
+      today
+    );
+  }, [
+    collections,
+    items,
+    xpHistory,
+    totalXp,
+    streak,
+    claimedChallengeIds,
+    today,
+  ]);
+
+  // Retos pendientes de reclamar (para badge)
+  const unclaimedChallengesCount = useMemo(() => {
+    return challengeProgresses.filter((cp) => cp.isCompleted && !cp.isClaimed)
+      .length;
+  }, [challengeProgresses]);
+
+  // Estadísticas del coleccionista
+  const collectorStats = useMemo(() => {
+    return calculateCollectorStats(collections, items);
+  }, [collections, items]);
+
+  // Acción de reclamar recompensa
+  const handleClaimChallenge = (challengeProg: ChallengeProgress) => {
+    const now = new Date().toISOString();
+    const result = claimChallengeReward({
+      uniqueKey: challengeProg.uniqueKey,
+      xpReward: challengeProg.xpReward,
+      title: challengeProg.title,
+      now,
+      isCompleted: challengeProg.isCompleted,
+    });
+
+    if (result.totalXpGained > 0) {
+      toast.success(
+        `¡Reto completado! ${challengeProg.title} (+${challengeProg.xpReward} XP)`
+      );
+      if (result.leveledUp) {
+        notifyGamificationResult(result);
+      }
+    }
+  };
+
+  // Configuración de pestañas
+  const tabList: {
+    key: ActiveTab;
+    label: string;
+    icon: ComponentType<LucideProps>;
+    badge?: number;
+  }[] = [
+    { key: 'achievements', label: 'Logros', icon: Award },
+    {
+      key: 'challenges',
+      label: 'Retos',
+      icon: Target,
+      badge: unclaimedChallengesCount,
+    },
+    { key: 'stats', label: 'Estadísticas', icon: BarChart3 },
+    { key: 'history', label: 'Historial', icon: History },
+  ];
+
+  const handleTabKeyDown = (
+    e: KeyboardEvent<HTMLButtonElement>,
+    currentIndex: number
+  ) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') {
+      return;
+    }
+    e.preventDefault();
+    const nextIndex =
+      e.key === 'ArrowRight'
+        ? (currentIndex + 1) % tabList.length
+        : (currentIndex - 1 + tabList.length) % tabList.length;
+
+    setActiveTab(tabList[nextIndex].key);
+    const nextTabElement = document.getElementById(
+      `tab-${tabList[nextIndex].key}`
+    );
+    nextTabElement?.focus();
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
@@ -210,75 +340,219 @@ export function AchievementsPage() {
           </div>
         </section>
 
-        {/* Sección de logros y filtros */}
-        <section aria-label="Catálogo de logros" className="mt-8 sm:mt-10">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4">
-            <div>
-              <h2 className="font-heading text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-                Insignias y Retos
-              </h2>
-              <p className="mt-0.5 text-sm text-muted-foreground">
-                Desbloquea logros catalogando, valorando y manteniendo tu constancia.
-              </p>
-            </div>
-
-            <span className="text-xs text-muted-foreground self-start sm:self-auto font-mono">
-              {unlockedCount} de {totalCount} conseguidos
-            </span>
-          </div>
-
-          {/* Píldoras de filtro de categoría */}
+        {/* Pestañas de Navegación Accesibles */}
+        <div className="mt-8 border-b border-border/70 pb-px">
           <div
-            role="toolbar"
-            aria-label="Filtrar logros por categoría"
-            className="mt-4 flex flex-wrap items-center gap-2 pb-2"
+            role="tablist"
+            aria-label="Pestañas de gamificación y progreso"
+            className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1"
           >
-            {CATEGORY_OPTIONS.map((opt) => {
-              const counts = categoryCounts[opt.key];
-              const isSelected = selectedCategory === opt.key;
-              const IconComp = opt.icon;
+            {tabList.map((tab, index) => {
+              const isSelected = activeTab === tab.key;
+              const IconComponent = tab.icon;
 
               return (
                 <button
-                  key={opt.key}
+                  key={tab.key}
+                  id={`tab-${tab.key}`}
+                  role="tab"
                   type="button"
-                  onClick={() => setSelectedCategory(opt.key)}
-                  aria-pressed={isSelected}
+                  aria-selected={isSelected}
+                  aria-controls={`panel-${tab.key}`}
+                  tabIndex={isSelected ? 0 : -1}
+                  onClick={() => setActiveTab(tab.key)}
+                  onKeyDown={(e) => handleTabKeyDown(e, index)}
                   className={cn(
-                    'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring',
+                    'relative inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring shrink-0',
                     isSelected
-                      ? 'bg-primary text-primary-foreground shadow-xs'
-                      : 'border border-border/70 bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
+                      ? 'bg-card text-foreground shadow-xs border border-border/80'
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                   )}
                 >
-                  <IconComp className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span>{opt.label}</span>
-                  <span
+                  <IconComponent
                     className={cn(
-                      'ml-1 font-mono text-[10px] rounded-full px-1.5 py-0.2',
-                      isSelected
-                        ? 'bg-primary-foreground/20 text-primary-foreground'
-                        : 'bg-muted text-muted-foreground'
+                      'h-4 w-4',
+                      isSelected ? 'text-primary' : 'text-muted-foreground'
                     )}
-                  >
-                    {counts.unlocked}/{counts.total}
-                  </span>
+                    aria-hidden="true"
+                  />
+                  <span>{tab.label}</span>
+
+                  {tab.badge !== undefined && tab.badge > 0 && (
+                    <span
+                      aria-label={`${tab.badge} recompensas pendientes de reclamar`}
+                      className="inline-flex items-center justify-center rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-xs animate-pulse"
+                    >
+                      {tab.badge}
+                    </span>
+                  )}
                 </button>
               );
             })}
           </div>
+        </div>
 
-          {/* Cuadrícula responsiva de logros */}
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredAchievements.map((achievement) => (
-              <AchievementCard
-                key={achievement.id}
-                achievement={achievement}
-                unlockedInfo={unlockedMap.get(achievement.id)}
-              />
-            ))}
-          </div>
-        </section>
+        {/* Panel 1: Logros e Insignias */}
+        {activeTab === 'achievements' && (
+          <section
+            id="panel-achievements"
+            role="tabpanel"
+            aria-labelledby="tab-achievements"
+            tabIndex={0}
+            className="mt-6 focus-visible:outline-hidden"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
+              <div>
+                <h2 className="font-heading text-xl font-bold tracking-tight text-foreground">
+                  Catálogo de Insignias
+                </h2>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  Desbloquea insignias honoríficas catalogando, completando ítems y compartiendo opiniones.
+                </p>
+              </div>
+
+              <span className="text-xs text-muted-foreground self-start sm:self-auto font-mono">
+                {unlockedCount} de {totalCount} conseguidos
+              </span>
+            </div>
+
+            {/* Píldoras de filtro de categoría */}
+            <div
+              role="toolbar"
+              aria-label="Filtrar logros por categoría"
+              className="mt-4 flex flex-wrap items-center gap-2 pb-2"
+            >
+              {CATEGORY_OPTIONS.map((opt) => {
+                const counts = categoryCounts[opt.key];
+                const isSelected = selectedCategory === opt.key;
+                const IconComp = opt.icon;
+
+                return (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    onClick={() => setSelectedCategory(opt.key)}
+                    aria-pressed={isSelected}
+                    className={cn(
+                      'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring',
+                      isSelected
+                        ? 'bg-primary text-primary-foreground shadow-xs'
+                        : 'border border-border/70 bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
+                    )}
+                  >
+                    <IconComp className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span>{opt.label}</span>
+                    <span
+                      className={cn(
+                        'ml-1 font-mono text-[10px] rounded-full px-1.5 py-0.2',
+                        isSelected
+                          ? 'bg-primary-foreground/20 text-primary-foreground'
+                          : 'bg-muted text-muted-foreground'
+                      )}
+                    >
+                      {counts.unlocked}/{counts.total}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Cuadrícula responsiva de logros */}
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredAchievements.map((achievement) => (
+                <AchievementCard
+                  key={achievement.id}
+                  achievement={achievement}
+                  unlockedInfo={unlockedMap.get(achievement.id)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Panel 2: Retos y Desafíos */}
+        {activeTab === 'challenges' && (
+          <section
+            id="panel-challenges"
+            role="tabpanel"
+            aria-labelledby="tab-challenges"
+            tabIndex={0}
+            className="mt-6 focus-visible:outline-hidden"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border/60">
+              <div>
+                <h2 className="font-heading text-xl font-bold tracking-tight text-foreground">
+                  Retos y Desafíos
+                </h2>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  Completa objetivos semanales o hitos de tu catálogo para sumar experiencia y subir de nivel.
+                </p>
+              </div>
+
+              <div className="inline-flex items-center gap-2 rounded-xl bg-card border border-border/70 px-3 py-1.5 text-xs font-mono text-muted-foreground">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>
+                  Semana {boundaries.weekKey} ({boundaries.startOfWeek} al {boundaries.endOfWeek})
+                </span>
+              </div>
+            </div>
+
+            {/* Cuadrícula responsiva de tarjetas de reto */}
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {challengeProgresses.map((prog) => (
+                <ChallengeCard
+                  key={prog.uniqueKey}
+                  progress={prog}
+                  onClaim={handleClaimChallenge}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Panel 3: Estadísticas del Coleccionista */}
+        {activeTab === 'stats' && (
+          <section
+            id="panel-stats"
+            role="tabpanel"
+            aria-labelledby="tab-stats"
+            tabIndex={0}
+            className="mt-6 focus-visible:outline-hidden"
+          >
+            <div className="pb-4 mb-6 border-b border-border/60">
+              <h2 className="font-heading text-xl font-bold tracking-tight text-foreground">
+                Analíticas del Coleccionista
+              </h2>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                Métricas cuantitativas del estado de tus colecciones, valoraciones y reflexiones.
+              </p>
+            </div>
+
+            <CollectorStatsPanel stats={collectorStats} />
+          </section>
+        )}
+
+        {/* Panel 4: Historial de Experiencia */}
+        {activeTab === 'history' && (
+          <section
+            id="panel-history"
+            role="tabpanel"
+            aria-labelledby="tab-history"
+            tabIndex={0}
+            className="mt-6 focus-visible:outline-hidden"
+          >
+            <div className="pb-4 mb-6 border-b border-border/60">
+              <h2 className="font-heading text-xl font-bold tracking-tight text-foreground">
+                Historial de Experiencia
+              </h2>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                Registro cronológico de tus actividades recientes y puntos de XP acumulados.
+              </p>
+            </div>
+
+            <XpHistoryFeed events={xpHistory} />
+          </section>
+        )}
       </main>
     </div>
   );

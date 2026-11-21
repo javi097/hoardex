@@ -55,7 +55,7 @@ Este plan de tareas desglosa la implementación de la Fase 3b (`specs/005-achiev
     - Probar subida de nivel desencadenada por la recompensa del reto.
   - Hecho cuando: `npm run test src/features/gamification/store/` pase al 100%.
 
-- [ ] **T5. Componentes UI y rediseño de `/achievements` con pestañas y badge.** RF-02.4, RF-03.1, RF-03.2, RF-03.3, RF-03.4, RF-04.2, RF-05.1, RF-05.2, RNF-04
+- [x] **T5. Componentes UI y rediseño de `/achievements` con pestañas y badge.** RF-02.4, RF-03.1, RF-03.2, RF-03.3, RF-03.4, RF-04.2, RF-05.1, RF-05.2, RNF-04
   - Crear `src/features/gamification/components/ChallengeCard.tsx`:
     - Tratamiento visual accesible (`role="article"`), badges de categoría (*Semanal* / *Hito*), título, descripción, icono y XP.
     - Barra de progreso porcentual (`role="progressbar"`).
