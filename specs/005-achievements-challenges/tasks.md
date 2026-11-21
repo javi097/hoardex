@@ -80,7 +80,7 @@ Este plan de tareas desglosa la implementación de la Fase 3b (`specs/005-achiev
     - Actualizar `src/pages/AchievementsPage.test.tsx`.
   - Hecho cuando: `npx tsc --noEmit`, `npm run lint` y los tests de componentes pasen limpios.
 
-- [ ] **T6. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-02, RNF-03, RNF-04, RNF-05
+- [x] **T6. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-02, RNF-03, RNF-04, RNF-05
   - Ejecutar verificación estática completa: `npx tsc --noEmit`, `npm run lint`, `npm run test` (suite completa) y `npm run build`. Confirmar 0 errores, 0 warnings y 0 `any`.
   - Levantar `npm run dev` y validar con Chrome DevTools MCP en `http://localhost:5173/achievements`:
     - Conmutar entre las 4 pestañas con teclado y clics verificando la accesibilidad y estado visual.

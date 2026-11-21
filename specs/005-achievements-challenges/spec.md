@@ -1,5 +1,5 @@
 # Spec 005 — Dynamic Challenges, XP History & Collector Stats
-Estado: aprobada
+Estado: implementada
 
 ---
 
@@ -152,17 +152,17 @@ Esta especificación corresponde a la **Fase 3b: Retos dinámicos, historial de 
 
 La spec se considerará implementada cuando:
 
-- [ ] Contratos ampliados en `src/interfaces/gamification.interface.ts` (`Challenge`, `ChallengeProgress`, `CollectorStats`, `ChallengeCategory`) sin ningún `any`.
-- [ ] Lógica pura en `src/features/gamification/core/challenges.ts` con catálogo base, cálculo de semanas ISO y evaluador de progreso, con 100% de tests en `challenges.test.ts`.
-- [ ] Lógica pura en `src/features/gamification/core/stats.ts` con cálculo de analíticas del coleccionista, con 100% de tests en `stats.test.ts`.
-- [ ] Store `gamification.store.ts` ampliado con `claimedChallengeIds: string[]`, acción `claimChallengeReward` y tests en `gamification.store.test.ts`.
-- [ ] Componente `ChallengeCard.tsx` accesible con barra de progreso, estado reclamable y botón interactivo.
-- [ ] Componente `XpHistoryFeed.tsx` accesible mostrando eventos recientes de XP con iconos y fechas relativas/formateadas.
-- [ ] Componente `CollectorStatsPanel.tsx` con métricas clave del coleccionista.
-- [ ] Integración en `AchievementsPage.tsx` mediante pestañas organizadas (*Logros*, *Retos*, *Estadísticas*, *Historial*).
-- [ ] Puerta de calidad estática impecable: `npx tsc --noEmit`, `npm run lint`, `npm run test` y `npm run build` en verde.
-- [ ] Verificación en vivo mediante Chrome DevTools MCP en `http://localhost:5173/`.
-- [ ] `MEMORY.md` actualizado (< 50 líneas).
+- [x] Contratos ampliados en `src/interfaces/gamification.interface.ts` (`Challenge`, `ChallengeProgress`, `CollectorStats`, `ChallengeCategory`) sin ningún `any`.
+- [x] Lógica pura en `src/features/gamification/core/challenges.ts` con catálogo base, cálculo de semanas ISO y evaluador de progreso, con 100% de tests en `challenges.test.ts`.
+- [x] Lógica pura en `src/features/gamification/core/stats.ts` con cálculo de analíticas del coleccionista, con 100% de tests en `stats.test.ts`.
+- [x] Store `gamification.store.ts` ampliado con `claimedChallengeIds: string[]`, acción `claimChallengeReward` y tests en `gamification.store.test.ts`.
+- [x] Componente `ChallengeCard.tsx` accesible con barra de progreso, estado reclamable y botón interactivo.
+- [x] Componente `XpHistoryFeed.tsx` accesible mostrando eventos recientes de XP con iconos y fechas relativas/formateadas.
+- [x] Componente `CollectorStatsPanel.tsx` con métricas clave del coleccionista.
+- [x] Integración en `AchievementsPage.tsx` mediante pestañas organizadas (*Logros*, *Retos*, *Estadísticas*, *Historial*).
+- [x] Puerta de calidad estática impecable: `npx tsc --noEmit`, `npm run lint`, `npm run test` y `npm run build` en verde.
+- [x] Verificación en vivo mediante Chrome DevTools MCP en `http://localhost:5173/`.
+- [x] `MEMORY.md` actualizado (< 50 líneas).
 
 ---
 
