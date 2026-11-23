@@ -60,7 +60,7 @@
     - Gestión de errores de red marcando `syncStatus = 'error'` de forma resiliente.
   - Hecho cuando: `npx tsc --noEmit` y `npm run lint` pasen limpios.
 
-- [ ] **T5. Componentes UI accesibles e integración en `Header.tsx`.** RF-03.1, RF-03.2, RF-03.3, RF-05.1, RF-05.3, RNF-04
+- [x] **T5. Componentes UI accesibles e integración en `Header.tsx`.** RF-03.1, RF-03.2, RF-03.3, RF-05.1, RF-05.3, RNF-04
   - Crear `src/features/sync/components/AuthDialog.tsx`:
     - Diálogo accesible (`role="dialog"`, foco atrapado, escape) con tabs para Iniciar sesión y Crear cuenta.
     - Campos de email y contraseña (mínimo 6 caracteres), estados de carga y feedback de Sonner.
