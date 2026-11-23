@@ -165,3 +165,42 @@ export interface CollectorStats {
     completedCount: number;
   } | null;
 }
+
+// ---------------------------------------------------------------------------
+// Contratos de Hoardex Wrapped Anual (Fase 5)
+// ---------------------------------------------------------------------------
+
+export interface WrappedCollectionBreakdown {
+  collectionId: string;
+  collectionName: string;
+  accentColor: string;
+  icon: string;
+  itemsCount: number;
+  percentage: number;
+}
+
+export interface WrappedTopItem {
+  id: string;
+  title: string;
+  collectionName: string;
+  rating: number;
+  releaseYear?: number;
+  coverUrl?: string;
+}
+
+export interface WrappedStats {
+  year: number;
+  hasActivity: boolean;
+  totalAdded: number;
+  totalCompleted: number;
+  completionRate: number; // 0..100
+  averageRating: number | null; // e.g. 4.5
+  favoriteCollection: WrappedCollectionBreakdown | null;
+  collectionsBreakdown: WrappedCollectionBreakdown[];
+  topRatedItems: WrappedTopItem[];
+  longestStreak: number;
+  level: number;
+  levelTitle: string;
+  totalXp: number;
+}
+
