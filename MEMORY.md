@@ -1,28 +1,30 @@
 # MEMORY.md — Hoardex
 
 ## Estado actual
-- **Fase actual:** Fase 3b completada (`005-achievements-challenges` implementada y verificada).
+- **Fase actual:** Fase 4 completada (`006-supabase-auth-sync` implementada y verificada).
 - **Completado:**
-  - `001`, `002`, `003`, `004` (Fases 1a a 3a): Catálogo, adaptadores, reseñas/filtros y motor base de XP/niveles/logros.
-  - `005-achievements-challenges` (Fase 3b):
-    - Motor de retos declarativos (`challenges.ts`): cálculo ISO UTC de semanas (`getWeekBoundaries`), progreso numérico `0..target`, porcentaje y clave única idempotente (`${id}_${weekKey}`).
-    - Métricas del coleccionista (`stats.ts`): tasa completado, nota media con 1 decimal, colección activa y cuaderno de notas.
-    - Store `hoardex-gamification`: persistencia de `claimedChallengeIds: string[]`, acción pura `claimChallengeReward` devolviendo `ActionResult` estructurado (sin efectos colaterales en store).
-    - UI accesible: `ChallengeCard`, `XpHistoryFeed` (con iconos, toggle 5/25 y `Zap`), `CollectorStatsPanel` y rediseño de `/achievements` en 4 pestañas accesibles con badge de recompensas pendientes.
-    - 34 suites y 199 tests pasando al 100% en Vitest. Cero `any`, cero warnings. Verificación DevTools MCP impecable.
+  - `001` a `005` (Fases 1a a 3b): Catálogo, adaptadores RAWG/OpenLibrary/BGG, reseñas, XP, rachas, retos y stats.
+  - `006-supabase-auth-sync` (Fase 4):
+    - Arquitectura Local-First con cliente seguro y fallback defensivo ante falta de credenciales de Supabase.
+    - Contratos PostgREST (`CollectionRow`, `ItemRow`, `GamificationStateRow`) y DDL PostgreSQL con RLS estricta.
+    - Conciliación pura LWW (`updatedAt`), unión idempotente de gamificación y validador de backups nativo (`version: 1`).
+    - Acciones atómicas de hidratación en stores (`hydrateCollections`, `hydrateItems`, `hydrateGamification`).
+    - Motor reactivo `useSyncEngine` con debounce de 1500 ms, sync en foco y hooks `useAuth`/`useSyncStore`.
+    - Componentes UI accesibles: `AuthDialog`, `AccountMenu`, `ImportBackupDialog` e integración en `Header`.
+    - 44 suites y 276 tests pasando al 100% en Vitest. Cero `any`, cero warnings. Verificación DevTools MCP impecable.
 - **Hoja de ruta SDD (`specs/`):**
-  - `001` a `005`: Implementadas.
-  - `006-supabase-auth-sync` (Fase 4): T1 a T4 completadas (infra/schema, core/mappers/LWW/backup, stores e hidratación atómica, hooks `useAuth` y `useSyncEngine`). RAWG API configurada en `.env.local`.
+  - `001` a `006`: Implementadas y testeadas.
   - `007-wrapped-stats-deploy` (Fase 5: Estadísticas anuales tipo Wrapped y despliegue a producción).
-- **Siguiente paso:** T5 en spec `006` (Componentes accesibles `AuthDialog`, `AccountMenu`, `ImportBackupDialog` e integración en Header).
+- **Siguiente paso:** Redactar spec para Fase 5 (`007-wrapped-stats-deploy`).
 
 ## Decisiones de arquitectura (y su porqué)
-- **Reclamación manual e idempotente de retos:** `claimChallengeReward` valida `isCompleted && !claimedChallengeIds.includes(key)` y retorna `ActionResult`; la capa UI gestiona los toasts de Sonner (`toast.success` y `notifyGamificationResult`).
-- **Clave semanal determinista ISO:** Semanas numeradas y delimitadas puramente por `today` (`YYYY-Www`, `[startOfWeek, endOfWeek]`), renovándose de forma transparente al cruzar de lunes UTC sin crons.
-- **Pestañas accesibles y navegación por teclado:** 4 vistas en `/achievements` (`Logros`, `Retos`, `Estadísticas`, `Historial`) con `tablist`, `tab`, `tabpanel` y navegación cíclica con flechas (`ArrowLeft`/`ArrowRight`).
+- **Local-First por diseño:** Hoardex opera al 100% como invitado sin credenciales; el login fusiona datos sin sobreescribir destructivamente.
+- **Conciliación LWW y unión idempotente:** Conflictos en ítems resueltos por `updatedAt`; gamificación toma `Math.max(XP)`, la racha activa y unión única de logros y retos.
+- **Backup JSON nativo y versionado:** Validador defensivo en TypeScript puro sin librerías externas para portabilidad y respaldo en frío.
+- **Tipado PostgREST estricto:** Tipos alias con index signatures implícitas para satisfacer genéricos de Supabase sin recurrir a `any`.
 
 ## Errores a evitar
 - **No importar stores de Zustand dentro de otros stores:** Pasar datos como argumentos en las acciones.
 - **No llamar a `new Date()` dentro de `core/`:** La lógica pura debe recibir fechas como parámetros `today` e `isoString`.
 - **PowerShell en Windows:** Encadenar comandos secuenciales con `;` y no con `&&`.
-- **Text matchers en Testing Library:** Usar regex acotada (ej. `/^Semanal$/i`) para evitar colisiones con textos largos que contengan la misma palabra (ej. "Catalogador semanal").
+- **Index signatures en tipos Supabase:** Usar `type` en lugar de `interface` para rows que interactúen con `GenericTable`.

@@ -1,5 +1,5 @@
 # Spec 006 — Supabase Auth, Cloud Sync & Local Backup
-Estado: aprobada
+Estado: implementada
 
 ---
 
@@ -161,18 +161,18 @@ Esta especificación corresponde a la **Fase 4: Autenticación, Sincronización 
 
 La spec se considerará implementada cuando:
 
-- [ ] Contratos de TypeScript en `src/interfaces/sync.interface.ts` (`SyncStatus`, `HoardexBackup`, `CloudSyncState`, tipos de esquema Supabase) sin ningún `any`.
-- [ ] Cliente seguro `src/lib/supabase.ts` con detección defensiva de variables de entorno.
-- [ ] Archivo `supabase/schema.sql` completo con tablas `collections`, `items`, `gamification_state`, índices y políticas RLS verificadas.
-- [ ] Módulo puro `src/features/sync/core/reconciliation.ts` con resolución de conflictos LWW y fusión de gamificación, con 100% de tests unitarios en `reconciliation.test.ts`.
-- [ ] Módulo puro `src/features/sync/core/backup.ts` para validación y generación de backups JSON, con 100% de tests unitarios en `backup.test.ts`.
-- [ ] Store `sync.store.ts` para gestionar el estado de sesión y sincronización (`syncStatus`, `lastSyncedAt`).
-- [ ] Componente `AuthDialog.tsx` accesible (login/registro con correo y contraseña).
-- [ ] Componente `AccountMenu.tsx` integrado en `Header.tsx` con indicador de estado y acciones de backup y cierre de sesión.
-- [ ] Hook `useSyncEngine.ts` que orqueste la sincronización no bloqueante ante mutaciones y re-enfoque de ventana.
-- [ ] Puerta de calidad estática impecable: `npx tsc --noEmit`, `npm run lint`, `npm run test` y `npm run build` en verde.
-- [ ] Verificación visual interactiva en Chrome DevTools MCP.
-- [ ] `MEMORY.md` actualizado (< 50 líneas).
+- [x] Contratos de TypeScript en `src/interfaces/sync.interface.ts` (`SyncStatus`, `HoardexBackup`, `CloudSyncState`, tipos de esquema Supabase) sin ningún `any`.
+- [x] Cliente seguro `src/lib/supabase.ts` con detección defensiva de variables de entorno.
+- [x] Archivo `supabase/schema.sql` completo con tablas `collections`, `items`, `gamification_state`, índices y políticas RLS verificadas.
+- [x] Módulo puro `src/features/sync/core/reconciliation.ts` con resolución de conflictos LWW y fusión de gamificación, con 100% de tests unitarios en `reconciliation.test.ts`.
+- [x] Módulo puro `src/features/sync/core/backup.ts` para validación y generación de backups JSON, con 100% de tests unitarios en `backup.test.ts`.
+- [x] Store `sync.store.ts` para gestionar el estado de sesión y sincronización (`syncStatus`, `lastSyncedAt`).
+- [x] Componente `AuthDialog.tsx` accesible (login/registro con correo y contraseña).
+- [x] Componente `AccountMenu.tsx` integrado en `Header.tsx` con indicador de estado y acciones de backup y cierre de sesión.
+- [x] Hook `useSyncEngine.ts` que orqueste la sincronización no bloqueante ante mutaciones y re-enfoque de ventana.
+- [x] Puerta de calidad estática impecable: `npx tsc --noEmit`, `npm run lint`, `npm run test` y `npm run build` en verde.
+- [x] Verificación visual interactiva en Chrome DevTools MCP.
+- [x] `MEMORY.md` actualizado (< 50 líneas).
 
 ---
 

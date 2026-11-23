@@ -77,7 +77,7 @@
     - Actualizar `Header.test.tsx` (o tests existentes de Header).
   - Hecho cuando: `npm run test` pase al 100% incluyendo todas las suites de componentes de sync.
 
-- [ ] **T6. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-02, RNF-03, RNF-04, RNF-05
+- [x] **T6. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-02, RNF-03, RNF-04, RNF-05
   - Ejecutar verificación estática completa: `npx tsc --noEmit`, `npm run lint`, `npm run test` (suite completa) y `npm run build`. Confirmar 0 errores, 0 warnings y 0 `any`.
   - Levantar `npm run dev` y validar con Chrome DevTools MCP en `http://localhost:5173/`:
     - Modo invitado / local: verificar que la app opera al 100% sin credenciales y permite exportar/importar backups JSON.
