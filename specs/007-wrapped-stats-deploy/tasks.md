@@ -16,7 +16,7 @@
     - Meta tag `theme-color` y favicon SVG temático de Hoardex.
   - Hecho cuando: `npx tsc --noEmit` y `npm run build` compilen sin errores con cero `any`.
 
-- [ ] **T2. Motor analítico Wrapped (`wrapped.ts`) y generador de resumen social y tarjeta SVG (`wrappedCard.ts`).** RF-01.1, RF-01.2, RF-01.3, RF-01.4, RF-01.5, RF-01.6, RF-01.7, RF-01.8, RF-03.1, RF-03.3, RNF-01, RNF-02, RNF-03
+- [x] **T2. Motor analítico Wrapped (`wrapped.ts`) y generador de resumen social y tarjeta SVG (`wrappedCard.ts`).** RF-01.1, RF-01.2, RF-01.3, RF-01.4, RF-01.5, RF-01.6, RF-01.7, RF-01.8, RF-03.1, RF-03.3, RNF-01, RNF-02, RNF-03
   - Crear `src/features/gamification/core/wrapped.ts`:
     - Implementar la función pura `calculateWrappedStats(collections, items, gamification, targetYear)`.
     - Filtrar altas e ítems completados por año, cálculo de ratio de completitud, valoración media redondeada a 1 decimal, desempate determinista de "Colección Reina", top 5 de ítems mejor puntuados, nivel y racha récord.
