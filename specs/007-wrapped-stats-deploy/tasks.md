@@ -29,7 +29,7 @@
   - Crear `src/features/gamification/core/wrappedCard.test.ts` verificando el formateo de texto, el escapado estricto XML y la estructura de etiquetas del SVG.
   - Hecho cuando: `npm run test src/features/gamification/core/` pase al 100%.
 
-- [ ] **T3. Serializador puro de exportación CSV RFC 4180 con UTF-8 BOM.** RF-04.1, RF-04.2, RF-04.3, RF-04.4, RNF-01, RNF-02, RNF-03
+- [x] **T3. Serializador puro de exportación CSV RFC 4180 con UTF-8 BOM.** RF-04.1, RF-04.2, RF-04.3, RF-04.4, RNF-01, RNF-02, RNF-03
   - Crear `src/features/sync/core/csv.ts`:
     - Implementar la función pura `exportToCsv(collections: Collection[], items: Item[]): string`.
     - Cabecera estandarizada con columnas: `collection_id`, `collection_name`, `item_id`, `title`, `subtitle`, `release_year`, `status_id`, `status_label`, `is_completed`, `rating`, `notes`, `created_at`, `updated_at`.
@@ -41,7 +41,7 @@
     - Verificación del BOM UTF-8 y preservación de acentos y caracteres especiales en español.
   - Hecho cuando: `npm run test src/features/sync/core/csv.test.ts` pase al 100%.
 
-- [ ] **T4. Modal interactivo accesible `WrappedDialog.tsx` con navegación por diapositivas.** RF-02.1, RF-02.2, RF-02.3, RF-02.4, RF-02.5, RF-02.6, RF-03.1, RF-03.2, RF-03.3, RNF-04
+- [x] **T4. Modal interactivo accesible `WrappedDialog.tsx` con navegación por diapositivas.** RF-02.1, RF-02.2, RF-02.3, RF-02.4, RF-02.5, RF-02.6, RF-03.1, RF-03.2, RF-03.3, RNF-04
   - Crear `src/features/gamification/components/WrappedDialog.tsx`:
     - Diálogo modal accesible (`role="dialog"`, `aria-modal="true"`, foco atrapado, cierre con tecla `Escape`).
     - 6 diapositivas secuenciales estilo Stories con indicadores de progreso segmentados en cabecera:
