@@ -1,30 +1,24 @@
 # MEMORY.md — Hoardex
 
 ## Estado actual
-- **Fase actual:** Fase 4 completada (`006-supabase-auth-sync` implementada y verificada).
-- **Completado:**
-  - `001` a `005` (Fases 1a a 3b): Catálogo, adaptadores RAWG/OpenLibrary/BGG, reseñas, XP, rachas, retos y stats.
-  - `006-supabase-auth-sync` (Fase 4):
-    - Arquitectura Local-First con cliente seguro y fallback defensivo ante falta de credenciales de Supabase.
-    - Contratos PostgREST (`CollectionRow`, `ItemRow`, `GamificationStateRow`) y DDL PostgreSQL con RLS estricta.
-    - Conciliación pura LWW (`updatedAt`), unión idempotente de gamificación y validador de backups nativo (`version: 1`).
-    - Acciones atómicas de hidratación en stores (`hydrateCollections`, `hydrateItems`, `hydrateGamification`).
-    - Motor reactivo `useSyncEngine` con debounce de 1500 ms, sync en foco y hooks `useAuth`/`useSyncStore`.
-    - Componentes UI accesibles: `AuthDialog`, `AccountMenu`, `ImportBackupDialog` e integración en `Header`.
-    - 44 suites y 276 tests pasando al 100% en Vitest. Cero `any`, cero warnings. Verificación DevTools MCP impecable.
-- **Hoja de ruta SDD (`specs/`):**
-  - `001` a `006`: Implementadas y testeadas.
-  - `007-wrapped-stats-deploy` (Fase 5: Estadísticas anuales tipo Wrapped y despliegue a producción).
-- **Siguiente paso:** Redactar spec para Fase 5 (`007-wrapped-stats-deploy`).
+- **Proyecto completado al 100%:** Fases 1 a 5 (`001` a `007`) implementadas, probadas y listas para producción.
+- **Fase 5 (`007-wrapped-stats-deploy`):**
+  - Motor analítico `calculateWrappedStats` puro con filtros de año, completitud y top valorados.
+  - Generador social de texto con emojis y tarjeta vectorial temática `generateWrappedSvg` con `escapeXml`.
+  - Serializador RFC 4180 `exportToCsv` con BOM UTF-8 (`\uFEFF`) y helper de descarga `downloadCatalogCsv`.
+  - Modal interactivo accesible `WrappedDialog` con 6 diapositivas estilo Stories, teclado, swipe y reducción de movimiento.
+  - Integración completa de Wrapped y CSV en `Header`, `AccountMenu` y `AchievementsPage`.
+  - Configuración Vercel (`vercel.json`), `.env.example`, metadatos SEO/Open Graph/Twitter Cards en `index.html`.
+- **Métricas globales:** 48 suites, 312 tests pasando (100% verde), 0 errores `tsc`, 0 `any` o `as any`, 0 warnings lint, build en 613ms.
 
 ## Decisiones de arquitectura (y su porqué)
-- **Local-First por diseño:** Hoardex opera al 100% como invitado sin credenciales; el login fusiona datos sin sobreescribir destructivamente.
-- **Conciliación LWW y unión idempotente:** Conflictos en ítems resueltos por `updatedAt`; gamificación toma `Math.max(XP)`, la racha activa y unión única de logros y retos.
-- **Backup JSON nativo y versionado:** Validador defensivo en TypeScript puro sin librerías externas para portabilidad y respaldo en frío.
-- **Tipado PostgREST estricto:** Tipos alias con index signatures implícitas para satisfacer genéricos de Supabase sin recurrir a `any`.
+- **Local-First & Resiliencia:** App 100% funcional sin conexión ni Supabase; respaldo en JSON versionado y CSV RFC 4180.
+- **Tarjetas SVG puras en cliente:** Generación vectorial ligera y nítida sin librerías pesadas (`html2canvas`).
+- **Reseteo de estado en render:** Control de diapositiva inicial en `WrappedDialog` derivando de props en render para evitar cascades de React.
+- **Conciliación LWW e idempotencia:** Fusión de datos remotos por `updatedAt`, XP por `Math.max` y unión de sets.
 
 ## Errores a evitar
-- **No importar stores de Zustand dentro de otros stores:** Pasar datos como argumentos en las acciones.
-- **No llamar a `new Date()` dentro de `core/`:** La lógica pura debe recibir fechas como parámetros `today` e `isoString`.
-- **PowerShell en Windows:** Encadenar comandos secuenciales con `;` y no con `&&`.
-- **Index signatures en tipos Supabase:** Usar `type` en lugar de `interface` para rows que interactúen con `GenericTable`.
+- **No importar stores dentro de otros stores:** Pasar datos por parámetro en acciones puras.
+- **No llamar a `new Date()` sin parámetro en `core/`:** Inyectar siempre `targetYear` o `today`.
+- **Encadenar en PowerShell Windows:** Usar `;` en lugar de `&&`.
+- **Botones con nombres duplicados en Radix Dialog:** Nombrar de forma unívoca para evitar colisiones con el botón cerrar (`sr-only`).

@@ -73,7 +73,7 @@
   - Actualizar y ampliar las suites de pruebas de los componentes afectados (`Header.test.tsx`, `AccountMenu.test.tsx`, etc.).
   - Hecho cuando: `npm run test` pase al 100% en todas las suites de componentes integrados.
 
-- [ ] **T6. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-02, RNF-03, RNF-04, RNF-05
+- [x] **T6. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-02, RNF-03, RNF-04, RNF-05
   - Ejecutar verificación estática completa: `npx tsc --noEmit`, `npm run lint`, `npm run test` (suite completa) y `npm run build`. Confirmar 0 errores, 0 warnings y 0 `any` en todo el proyecto.
   - Levantar `npm run dev` y validar con Chrome DevTools MCP en `http://localhost:5173/`:
     - Abrir `WrappedDialog` y recorrer las 6 diapositivas con teclado (`ArrowRight`/`ArrowLeft`) y botones.

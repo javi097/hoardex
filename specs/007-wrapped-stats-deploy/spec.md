@@ -1,5 +1,5 @@
 # Spec 007 — Hoardex Wrapped, Exportación CSV y Preparación para Despliegue en Vercel
-Estado: aprobada
+Estado: implementada
 
 ---
 
@@ -176,18 +176,18 @@ Esta especificación corresponde a la **Fase 5 (final): Hoardex Wrapped, Exporta
 
 ## Criterios de finalización
 
-- [ ] `calculateWrappedStats` implementado en `src/features/gamification/core/wrapped.ts` con cobertura del 100% en `wrapped.test.ts`.
-- [ ] `exportToCsv` implementado en `src/features/sync/core/csv.ts` con tests en `csv.test.ts` validando el estándar RFC 4180 y el BOM UTF-8.
-- [ ] Función pura `generateWrappedSvg` y generador de texto enriquecido implementados en `src/features/gamification/core/wrappedCard.ts` con tests en `wrappedCard.test.ts`.
-- [ ] Componente visual `WrappedDialog.tsx` implementado con navegación por diapositivas, soporte de teclado, gestos móviles, botón para copiar resumen al portapapeles y botón para descargar tarjeta `.svg`.
-- [ ] Botón de apertura de Wrapped integrado en `Header.tsx`, `AccountMenu.tsx` y `AchievementsPage.tsx`.
-- [ ] Botón para exportar catálogo a CSV integrado en el menú de usuario / cabecera.
-- [ ] Archivo `vercel.json` creado en la raíz con la regla de rewrite SPA a `/index.html`.
-- [ ] Archivo `.env.example` documentado con todas las variables de entorno.
-- [ ] Metadatos SEO, Open Graph y favicon temático configurados en `index.html`.
-- [ ] `npx tsc --noEmit` completado con 0 errores (cero `any`).
-- [ ] `npm run lint` completado con 0 errores y 0 warnings.
-- [ ] `npm run test` completado con el 100% de tests pasando en todas las suites.
-- [ ] `npm run build` ejecutado con éxito.
-- [ ] Verificación en Chrome DevTools MCP en modo claro y oscuro, desktop y móvil.
-- [ ] `MEMORY.md` actualizado cerrando el proyecto.
+- [x] `calculateWrappedStats` implementado en `src/features/gamification/core/wrapped.ts` con cobertura del 100% en `wrapped.test.ts`.
+- [x] `exportToCsv` implementado en `src/features/sync/core/csv.ts` con tests en `csv.test.ts` validando el estándar RFC 4180 y el BOM UTF-8.
+- [x] Función pura `generateWrappedSvg` y generador de texto enriquecido implementados en `src/features/gamification/core/wrappedCard.ts` con tests en `wrappedCard.test.ts`.
+- [x] Componente visual `WrappedDialog.tsx` implementado con navegación por diapositivas, soporte de teclado, gestos móviles, botón para copiar resumen al portapapeles y botón para descargar tarjeta `.svg`.
+- [x] Botón de apertura de Wrapped integrado en `Header.tsx`, `AccountMenu.tsx` y `AchievementsPage.tsx`.
+- [x] Botón para exportar catálogo a CSV integrado en el menú de usuario / cabecera.
+- [x] Archivo `vercel.json` creado en la raíz con la regla de rewrite SPA a `/index.html`.
+- [x] Archivo `.env.example` documentado con todas las variables de entorno.
+- [x] Metadatos SEO, Open Graph y favicon temático configurados en `index.html`.
+- [x] `npx tsc --noEmit` completado con 0 errores (cero `any`).
+- [x] `npm run lint` completado con 0 errores y 0 warnings.
+- [x] `npm run test` completado con el 100% de tests pasando en todas las suites.
+- [x] `npm run build` ejecutado con éxito.
+- [x] Verificación en Chrome DevTools MCP en modo claro y oscuro, desktop y móvil.
+- [x] `MEMORY.md` actualizado cerrando el proyecto.
