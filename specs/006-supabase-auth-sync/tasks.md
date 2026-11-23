@@ -47,7 +47,7 @@
     - Actualizar los tests de `collections.store.test.ts`, `items.store.test.ts` y `gamification.store.test.ts` para verificar la hidratación limpia sin mutaciones corruptas ni loops.
   - Hecho cuando: `npm run test` pase al 100% en todas las suites de stores.
 
-- [ ] **T4. Capa de integración y ciclo de vida: Hooks `useAuth` y `useSyncEngine`.** RF-03.1, RF-03.4, RF-04.2, RF-04.3, RF-04.4, RNF-02
+- [x] **T4. Capa de integración y ciclo de vida: Hooks `useAuth` y `useSyncEngine`.** RF-03.1, RF-03.4, RF-04.2, RF-04.3, RF-04.4, RNF-02
   - Crear `src/features/sync/hooks/useAuth.ts`:
     - Métodos para login (`signInWithPassword`), registro (`signUp`) y cierre de sesión (`signOut`).
     - Suscripción limpia a `supabase.auth.onAuthStateChange` sincronizando la sesión con `sync.store.ts`.

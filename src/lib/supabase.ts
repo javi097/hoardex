@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/interfaces/sync.interface';
 
 const rawUrl = import.meta.env.VITE_SUPABASE_URL;
 const rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -16,8 +17,8 @@ export const isSupabaseConfigured: boolean =
  * Cliente tipado de Supabase. Es null cuando la aplicación se ejecuta en modo
  * local-first sin credenciales de backend en .env.local.
  */
-export const supabase: SupabaseClient | null = isSupabaseConfigured
-  ? createClient(rawUrl as string, rawKey as string, {
+export const supabase: SupabaseClient<Database> | null = isSupabaseConfigured
+  ? createClient<Database>(rawUrl as string, rawKey as string, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,

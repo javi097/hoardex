@@ -11,10 +11,10 @@
     - UI accesible: `ChallengeCard`, `XpHistoryFeed` (con iconos, toggle 5/25 y `Zap`), `CollectorStatsPanel` y rediseño de `/achievements` en 4 pestañas accesibles con badge de recompensas pendientes.
     - 34 suites y 199 tests pasando al 100% en Vitest. Cero `any`, cero warnings. Verificación DevTools MCP impecable.
 - **Hoja de ruta SDD (`specs/`):**
-  - `001`, `002`, `003`, `004`, `005`: Implementadas.
-  - `006-supabase-auth-sync` (Fase 4: Auth, base de datos en Supabase y sincronización en la nube).
+  - `001` a `005`: Implementadas.
+  - `006-supabase-auth-sync` (Fase 4): T1 a T4 completadas (infra/schema, core/mappers/LWW/backup, stores e hidratación atómica, hooks `useAuth` y `useSyncEngine`). RAWG API configurada en `.env.local`.
   - `007-wrapped-stats-deploy` (Fase 5: Estadísticas anuales tipo Wrapped y despliegue a producción).
-- **Siguiente paso:** Iniciar la spec `006-supabase-auth-sync` (`sdd-spec`).
+- **Siguiente paso:** T5 en spec `006` (Componentes accesibles `AuthDialog`, `AccountMenu`, `ImportBackupDialog` e integración en Header).
 
 ## Decisiones de arquitectura (y su porqué)
 - **Reclamación manual e idempotente de retos:** `claimChallengeReward` valida `isCompleted && !claimedChallengeIds.includes(key)` y retorna `ActionResult`; la capa UI gestiona los toasts de Sonner (`toast.success` y `notifyGamificationResult`).

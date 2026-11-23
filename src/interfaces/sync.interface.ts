@@ -11,7 +11,7 @@ export type SyncStatus = 'local' | 'syncing' | 'synced' | 'error';
 /**
  * Fila relacional en PostgreSQL para colecciones (Supabase snake_case).
  */
-export interface CollectionRow {
+export type CollectionRow = {
   id: string;
   user_id: string;
   name: string;
@@ -22,12 +22,12 @@ export interface CollectionRow {
   statuses: CollectionStatus[];
   created_at: string;
   updated_at: string;
-}
+};
 
 /**
  * Fila relacional en PostgreSQL para ítems catalogados (Supabase snake_case).
  */
-export interface ItemRow {
+export type ItemRow = {
   id: string;
   user_id: string;
   collection_id: string;
@@ -43,12 +43,12 @@ export interface ItemRow {
   review_xp_awarded: boolean;
   created_at: string;
   updated_at: string;
-}
+};
 
 /**
  * Fila relacional en PostgreSQL para el estado consolidado de gamificación (Supabase snake_case).
  */
-export interface GamificationStateRow {
+export type GamificationStateRow = {
   user_id: string;
   total_xp: number;
   streak: StreakInfo;
@@ -57,6 +57,36 @@ export interface GamificationStateRow {
   rewarded_collection_ids: string[];
   xp_history: XpEvent[];
   updated_at: string;
+};
+
+/**
+ * Esquema de base de datos tipado para SupabaseClient<Database>.
+ */
+export interface Database {
+  public: {
+    Tables: {
+      collections: {
+        Row: CollectionRow;
+        Insert: CollectionRow;
+        Update: Partial<CollectionRow>;
+        Relationships: [];
+      };
+      items: {
+        Row: ItemRow;
+        Insert: ItemRow;
+        Update: Partial<ItemRow>;
+        Relationships: [];
+      };
+      gamification_state: {
+        Row: GamificationStateRow;
+        Insert: GamificationStateRow;
+        Update: Partial<GamificationStateRow>;
+        Relationships: [];
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+  };
 }
 
 /**
