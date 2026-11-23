@@ -4,8 +4,10 @@ import {
   CheckCircle2,
   CloudOff,
   Download,
+  FileSpreadsheet,
   LogOut,
   RefreshCw,
+  Sparkles,
   Upload,
   User as UserIcon,
 } from 'lucide-react';
@@ -19,8 +21,10 @@ import { useCollectionsStore } from '@/features/collections/store/collections.st
 import { useItemsStore } from '@/features/items/store/items.store';
 import { useGamificationStore } from '@/features/gamification/store/gamification.store';
 import { generateBackup } from '@/features/sync/core/backup';
+import { downloadCatalogCsv } from '@/features/sync/core/csv';
 import type { PersistedGamificationData } from '@/interfaces/sync.interface';
 import { ImportBackupDialog } from './ImportBackupDialog';
+import { WrappedDialog } from '@/features/gamification/components/WrappedDialog';
 
 export interface Props {
   className?: string;
@@ -32,6 +36,7 @@ export function AccountMenu({ className }: Props) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isWrappedOpen, setIsWrappedOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Cerrar el menú al hacer clic fuera o pulsar Escape
@@ -101,6 +106,13 @@ export function AccountMenu({ className }: Props) {
       console.error('Error al exportar copia de seguridad:', err);
       toast.error('No se pudo generar la copia de seguridad.');
     }
+  };
+
+  const handleExportCsv = () => {
+    setIsOpen(false);
+    const collections = useCollectionsStore.getState().collections;
+    const items = useItemsStore.getState().items;
+    downloadCatalogCsv(collections, items);
   };
 
   const handleSyncClick = () => {
@@ -233,6 +245,29 @@ export function AccountMenu({ className }: Props) {
             <button
               type="button"
               role="menuitem"
+              onClick={() => {
+                setIsOpen(false);
+                setIsWrappedOpen(true);
+              }}
+              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium text-foreground hover:bg-muted transition-colors"
+            >
+              <Sparkles className="h-4 w-4 text-indigo-400" />
+              <span>Hoardex Wrapped</span>
+            </button>
+
+            <button
+              type="button"
+              role="menuitem"
+              onClick={handleExportCsv}
+              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium text-foreground hover:bg-muted transition-colors"
+            >
+              <FileSpreadsheet className="h-4 w-4 text-primary" />
+              <span>Exportar catálogo CSV</span>
+            </button>
+
+            <button
+              type="button"
+              role="menuitem"
               onClick={handleExportBackup}
               className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium text-foreground hover:bg-muted transition-colors"
             >
@@ -273,6 +308,12 @@ export function AccountMenu({ className }: Props) {
       <ImportBackupDialog
         open={isImportOpen}
         onOpenChange={setIsImportOpen}
+      />
+
+      {/* Modal de Hoardex Wrapped */}
+      <WrappedDialog
+        open={isWrappedOpen}
+        onOpenChange={setIsWrappedOpen}
       />
     </div>
   );

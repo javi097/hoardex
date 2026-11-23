@@ -1,5 +1,6 @@
 import type { Collection } from '@/interfaces/collection.interface';
 import type { Item } from '@/interfaces/item.interface';
+import { toast } from 'sonner';
 
 /**
  * Escapa y formatea un valor individual siguiendo la especificación estándar RFC 4180:
@@ -90,3 +91,34 @@ export function exportToCsv(collections: Collection[], items: Item[]): string {
   // Prefijo UTF-8 Byte Order Mark (\uFEFF) + líneas unidas con CRLF (estándar RFC 4180)
   return `\uFEFF${lines.join('\r\n')}`;
 }
+
+/**
+ * Helper reutilizable de cliente para exportar y descargar el catálogo en formato CSV (RFC 4180 con BOM UTF-8).
+ * Genera el archivo 'hoardex-catalog-{YYYY-MM-DD}.csv' y emite una notificación toast accesible.
+ */
+export function downloadCatalogCsv(
+  collections: Collection[],
+  items: Item[],
+  dateStr?: string
+): void {
+  try {
+    const csvContent = exportToCsv(collections, items);
+    const blob = new Blob([csvContent], {
+      type: 'text/csv;charset=utf-8;',
+    });
+    const url = URL.createObjectURL(blob);
+    const formattedDate = dateStr ?? new Date().toISOString().slice(0, 10);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `hoardex-catalog-${formattedDate}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success('Catálogo exportado a CSV correctamente');
+  } catch (err: unknown) {
+    console.error('Error al exportar catálogo a CSV:', err);
+    toast.error('Error al exportar el catálogo a CSV');
+  }
+}
+

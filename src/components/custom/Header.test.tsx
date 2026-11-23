@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
+import { toast } from 'sonner';
 import { Header } from './Header';
 import type { User } from '@supabase/supabase-js';
 
@@ -138,5 +139,40 @@ describe('Header', () => {
     expect(
       screen.getByRole('button', { name: /Restaurar copia de seguridad/i })
     ).toBeDefined();
+  });
+
+  it('opens WrappedDialog when clicking Wrapped button', async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>
+    );
+
+    const wrappedBtn = screen.getByRole('button', { name: /Ver Hoardex Wrapped/i });
+    await user.click(wrappedBtn);
+
+    expect(
+      screen.getByRole('dialog', { name: /Hoardex Wrapped/i })
+    ).toBeDefined();
+  });
+
+  it('exports catalog to CSV when clicking Exportar catálogo a CSV in guest mode', async () => {
+    globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-csv');
+    globalThis.URL.revokeObjectURL = vi.fn();
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>
+    );
+
+    const csvBtn = screen.getByRole('button', { name: /Exportar catálogo a CSV/i });
+    await user.click(csvBtn);
+
+    expect(globalThis.URL.createObjectURL).toHaveBeenCalledTimes(1);
+    expect(toast.success).toHaveBeenCalledWith('Catálogo exportado a CSV correctamente');
   });
 });

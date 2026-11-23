@@ -162,4 +162,42 @@ describe('AccountMenu', () => {
 
     expect(screen.queryByRole('menu')).toBeNull();
   });
+
+  it('opens WrappedDialog when clicking Hoardex Wrapped in menu', async () => {
+    const user = userEvent.setup();
+    render(<AccountMenu />);
+
+    await user.click(
+      screen.getByRole('button', { name: /Menú de cuenta y sincronización/i })
+    );
+    await user.click(
+      screen.getByRole('menuitem', { name: /Hoardex Wrapped/i })
+    );
+
+    expect(screen.getByRole('dialog', { name: /Hoardex Wrapped/i })).toBeDefined();
+  });
+
+  it('exports catalog to CSV when clicking Exportar catálogo CSV in menu', async () => {
+    const user = userEvent.setup();
+    const clickSpy = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => {});
+    const mockCreateObjectURL = vi.fn().mockReturnValue('blob:mock-csv-url');
+    const mockRevokeObjectURL = vi.fn();
+    globalThis.URL.createObjectURL = mockCreateObjectURL;
+    globalThis.URL.revokeObjectURL = mockRevokeObjectURL;
+
+    render(<AccountMenu />);
+
+    await user.click(
+      screen.getByRole('button', { name: /Menú de cuenta y sincronización/i })
+    );
+    await user.click(
+      screen.getByRole('menuitem', { name: /Exportar catálogo CSV/i })
+    );
+
+    expect(mockCreateObjectURL).toHaveBeenCalled();
+    expect(toast.success).toHaveBeenCalledWith('Catálogo exportado a CSV correctamente');
+    clickSpy.mockRestore();
+  });
 });

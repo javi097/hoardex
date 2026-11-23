@@ -14,9 +14,11 @@ import {
   BarChart3,
   History,
   Target,
+  FileSpreadsheet,
   type LucideProps,
 } from 'lucide-react';
 import { Header } from '@/components/custom/Header';
+import { Button } from '@/components/ui/button';
 import { useGamificationStore } from '@/features/gamification/store/gamification.store';
 import { useCollectionsStore } from '@/features/collections/store/collections.store';
 import { useItemsStore } from '@/features/items/store/items.store';
@@ -33,6 +35,8 @@ import { AchievementCard } from '@/features/gamification/components/AchievementC
 import { ChallengeCard } from '@/features/gamification/components/ChallengeCard';
 import { CollectorStatsPanel } from '@/features/gamification/components/CollectorStatsPanel';
 import { XpHistoryFeed } from '@/features/gamification/components/XpHistoryFeed';
+import { WrappedDialog } from '@/features/gamification/components/WrappedDialog';
+import { downloadCatalogCsv } from '@/features/sync/core/csv';
 import type {
   AchievementCategory,
   ChallengeProgress,
@@ -62,6 +66,7 @@ export function AchievementsPage() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('achievements');
   const [selectedCategory, setSelectedCategory] =
     useState<FilterCategory>('all');
+  const [isWrappedOpen, setIsWrappedOpen] = useState(false);
 
   // Stores
   const totalXp = useGamificationStore((state) => state.totalXp);
@@ -528,6 +533,43 @@ export function AchievementsPage() {
               </p>
             </div>
 
+            {/* Banner destacado Hoardex Wrapped */}
+            <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-linear-to-r from-indigo-500/10 via-purple-500/10 to-transparent border border-indigo-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-linear-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-xs shrink-0">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-foreground">
+                    Hoardex Wrapped
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Revive tu año en diapositivas interactivas con tus aficiones, títulos top y estadísticas.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Button
+                  onClick={() => setIsWrappedOpen(true)}
+                  size="sm"
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold flex-1 sm:flex-none gap-1.5"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Ver mi Wrapped
+                </Button>
+                <Button
+                  onClick={() => downloadCatalogCsv(collections, items)}
+                  variant="outline"
+                  size="sm"
+                  className="border-border text-foreground hover:bg-muted flex-1 sm:flex-none gap-1.5"
+                  title="Exportar catálogo completo a CSV"
+                >
+                  <FileSpreadsheet className="w-4 h-4 text-primary" />
+                  Exportar CSV
+                </Button>
+              </div>
+            </div>
+
             <CollectorStatsPanel stats={collectorStats} />
           </section>
         )}
@@ -554,6 +596,12 @@ export function AchievementsPage() {
           </section>
         )}
       </main>
+
+      {/* Modal de Hoardex Wrapped */}
+      <WrappedDialog
+        open={isWrappedOpen}
+        onOpenChange={setIsWrappedOpen}
+      />
     </div>
   );
 }

@@ -1,7 +1,15 @@
-import { describe, it, expect } from 'vitest';
-import { exportToCsv, escapeCsvValue, CSV_HEADERS } from './csv';
+import { describe, it, expect, vi } from 'vitest';
+import { exportToCsv, escapeCsvValue, downloadCatalogCsv, CSV_HEADERS } from './csv';
+import { toast } from 'sonner';
 import type { Collection } from '@/interfaces/collection.interface';
 import type { Item } from '@/interfaces/item.interface';
+
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
 
 describe('CSV Serializer (RFC 4180)', () => {
   describe('escapeCsvValue', () => {
@@ -156,6 +164,33 @@ describe('CSV Serializer (RFC 4180)', () => {
       expect(lines).toHaveLength(2);
       // colName vacío, statusLabel es statusId fallback, is_completed es 'false'
       expect(lines[1]).toContain('col-unknown,,it-orphan,Ítem Huérfano,,,st-unknown,st-unknown,false');
+    });
+  });
+
+  describe('downloadCatalogCsv', () => {
+    it('crea un elemento anchor con URL Blob y descarga hoardex-catalog-{YYYY-MM-DD}.csv', () => {
+      globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-csv-url');
+      globalThis.URL.revokeObjectURL = vi.fn();
+      const mockClick = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+      const mockCollections: Collection[] = [
+        {
+          id: 'c1',
+          name: 'Colección Test',
+          icon: 'Layers',
+          accentColor: '#6366f1',
+          provider: 'manual',
+          createdAt: '2026-01-01T00:00:00Z',
+          statuses: [],
+        },
+      ];
+
+      downloadCatalogCsv(mockCollections, [], '2026-11-23');
+
+      expect(globalThis.URL.createObjectURL).toHaveBeenCalledTimes(1);
+      expect(mockClick).toHaveBeenCalledTimes(1);
+      expect(globalThis.URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock-csv-url');
+      expect(toast.success).toHaveBeenCalledWith('Catálogo exportado a CSV correctamente');
     });
   });
 });

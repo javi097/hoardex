@@ -60,7 +60,7 @@
   - Crear `src/features/gamification/components/WrappedDialog.test.tsx` verificando renderizado accesible, teclado, cambio de diapositivas, copiado de texto y descarga SVG.
   - Hecho cuando: `npm run test src/features/gamification/components/WrappedDialog.test.tsx` pase al 100%.
 
-- [ ] **T5. Integración accesible de Wrapped y descarga CSV en `Header.tsx`, `AccountMenu.tsx` y `AchievementsPage.tsx`.** RF-02.1, RF-04.5, RNF-04
+- [x] **T5. Integración accesible de Wrapped y descarga CSV en `Header.tsx`, `AccountMenu.tsx` y `AchievementsPage.tsx`.** RF-02.1, RF-04.5, RNF-04
   - En `src/components/custom/Header.tsx`:
     - Añadir botón accesible con icono de destellos (`Sparkles`) y texto *"Wrapped"* para abrir `WrappedDialog`.
     - En modo invitado o sin Supabase, ofrecer opción directa para descargar catálogo CSV (`hoardex-catalog-{YYYY-MM-DD}.csv`).
