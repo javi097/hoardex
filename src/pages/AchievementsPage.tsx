@@ -14,7 +14,6 @@ import {
   BarChart3,
   History,
   Target,
-  FileSpreadsheet,
   type LucideProps,
 } from 'lucide-react';
 import { Header } from '@/components/custom/Header';
@@ -36,7 +35,6 @@ import { ChallengeCard } from '@/features/gamification/components/ChallengeCard'
 import { CollectorStatsPanel } from '@/features/gamification/components/CollectorStatsPanel';
 import { XpHistoryFeed } from '@/features/gamification/components/XpHistoryFeed';
 import { WrappedDialog } from '@/features/gamification/components/WrappedDialog';
-import { downloadCatalogCsv } from '@/features/sync/core/csv';
 import type {
   AchievementCategory,
   ChallengeProgress,
@@ -556,16 +554,6 @@ export function AchievementsPage() {
                 >
                   <Sparkles className="w-4 h-4" />
                   Ver mi Wrapped
-                </Button>
-                <Button
-                  onClick={() => downloadCatalogCsv(collections, items)}
-                  variant="outline"
-                  size="sm"
-                  className="border-border text-foreground hover:bg-muted flex-1 sm:flex-none gap-1.5"
-                  title="Exportar catálogo completo a CSV"
-                >
-                  <FileSpreadsheet className="w-4 h-4 text-primary" />
-                  Exportar CSV
                 </Button>
               </div>
             </div>

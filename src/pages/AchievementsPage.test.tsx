@@ -250,11 +250,7 @@ describe('AchievementsPage', () => {
     expect(achievementsTab.getAttribute('aria-selected')).toBe('true');
   });
 
-  it('allows launching WrappedDialog and exporting CSV from stats tab', () => {
-    globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-achievements-csv');
-    globalThis.URL.revokeObjectURL = vi.fn();
-    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
-
+  it('allows launching WrappedDialog from stats tab', () => {
     render(
       <MemoryRouter>
         <AchievementsPage />
@@ -264,14 +260,9 @@ describe('AchievementsPage', () => {
     const statsTab = screen.getByRole('tab', { name: /Estadísticas/i });
     fireEvent.click(statsTab);
 
-    // Banner de Wrapped presente
+    // Banner de Wrapped presente y botón Exportar CSV removido
     expect(screen.getByText('Ver mi Wrapped')).toBeDefined();
-    expect(screen.getByText('Exportar CSV')).toBeDefined();
-
-    // Exportar CSV antes de abrir el modal (evitando aria-hidden modal trap)
-    fireEvent.click(screen.getByRole('button', { name: /Exportar CSV/i }));
-    expect(globalThis.URL.createObjectURL).toHaveBeenCalledTimes(1);
-    expect(toast.success).toHaveBeenCalledWith('Catálogo exportado a CSV correctamente');
+    expect(screen.queryByText('Exportar CSV')).toBeNull();
 
     // Abrir Wrapped
     fireEvent.click(screen.getByRole('button', { name: /Ver mi Wrapped/i }));

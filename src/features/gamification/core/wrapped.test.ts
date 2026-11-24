@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateWrappedStats } from './wrapped';
+import { calculateWrappedStats, isWrappedAvailable } from './wrapped';
 import type { Collection } from '@/interfaces/collection.interface';
 import type { Item } from '@/interfaces/item.interface';
 
@@ -342,5 +342,51 @@ describe('calculateWrappedStats', () => {
     expect(stats.topRatedItems[4].rating).toBe(2);
     // El de rating 1 ('Juego 6') queda fuera del top 5
     expect(stats.topRatedItems.some((it) => it.id === 'it-6')).toBe(false);
+  });
+});
+
+describe('isWrappedAvailable', () => {
+  it('devuelve false para el año en curso si la fecha es previa al 10 de diciembre', () => {
+    // 24 de noviembre de 2026
+    const nov24 = new Date(2026, 10, 24);
+    expect(isWrappedAvailable(nov24, 2026)).toBe(false);
+
+    // 9 de diciembre de 2026
+    const dec9 = new Date(2026, 11, 9);
+    expect(isWrappedAvailable(dec9, 2026)).toBe(false);
+
+    // 1 de enero de 2026
+    const jan1 = new Date(2026, 0, 1);
+    expect(isWrappedAvailable(jan1, 2026)).toBe(false);
+  });
+
+  it('devuelve true para el año en curso a partir del 10 de diciembre', () => {
+    // 10 de diciembre de 2026 a las 00:00
+    const dec10 = new Date(2026, 11, 10, 0, 0, 0);
+    expect(isWrappedAvailable(dec10, 2026)).toBe(true);
+
+    // 15 de diciembre de 2026
+    const dec15 = new Date(2026, 11, 15);
+    expect(isWrappedAvailable(dec15, 2026)).toBe(true);
+
+    // 31 de diciembre de 2026
+    const dec31 = new Date(2026, 11, 31, 23, 59, 59);
+    expect(isWrappedAvailable(dec31, 2026)).toBe(true);
+  });
+
+  it('devuelve true para cualquier año anterior independientemente de la fecha actual', () => {
+    // Consultado el 15 de mayo de 2026 para el año 2025
+    const may15 = new Date(2026, 4, 15);
+    expect(isWrappedAvailable(may15, 2025)).toBe(true);
+
+    // Consultado el 24 de noviembre de 2026 para el año 2024
+    const nov24 = new Date(2026, 10, 24);
+    expect(isWrappedAvailable(nov24, 2024)).toBe(true);
+  });
+
+  it('devuelve false para años futuros', () => {
+    // Consultado en 2026 para el año 2027
+    const dec15 = new Date(2026, 11, 15);
+    expect(isWrappedAvailable(dec15, 2027)).toBe(false);
   });
 });

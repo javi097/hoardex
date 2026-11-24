@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -31,23 +31,15 @@ export interface Props {
 export function NewCollectionSheet({ open, onOpenChange, onCreated }: Props) {
   const [selectedTemplate, setSelectedTemplate] =
     useState<CollectionTemplate | null>(null);
-  const [isCustom, setIsCustom] = useState(false);
 
   const addCollection = useCollectionsStore((state) => state.addCollection);
 
   const handleSelectTemplate = (template: CollectionTemplate) => {
     setSelectedTemplate(template);
-    setIsCustom(false);
-  };
-
-  const handleStartFromScratch = () => {
-    setSelectedTemplate(null);
-    setIsCustom(true);
   };
 
   const handleResetStep = () => {
     setSelectedTemplate(null);
-    setIsCustom(false);
   };
 
   const handleSubmit = (params: CreateCollectionParams) => {
@@ -83,7 +75,7 @@ export function NewCollectionSheet({ open, onOpenChange, onCreated }: Props) {
     }
   };
 
-  const isFormActive = Boolean(selectedTemplate || isCustom);
+  const isFormActive = Boolean(selectedTemplate);
 
   return (
     <Sheet
@@ -164,27 +156,6 @@ export function NewCollectionSheet({ open, onOpenChange, onCreated }: Props) {
                 );
               })}
             </div>
-
-            <div className="relative my-2">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border/60" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground font-medium">
-                  o también
-                </span>
-              </div>
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleStartFromScratch}
-              className="w-full justify-center gap-2 py-5 border-dashed"
-            >
-              <Plus className="h-4 w-4 text-muted-foreground" />
-              <span>Crear colección desde cero</span>
-            </Button>
           </div>
         ) : (
           <div className="py-2">

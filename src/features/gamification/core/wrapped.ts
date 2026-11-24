@@ -14,6 +14,23 @@ export interface WrappedGamificationInput {
 }
 
 /**
+ * Determina de forma 100% pura si el Wrapped de un año objetivo está disponible.
+ * - Años anteriores (< now.getFullYear()): siempre disponible.
+ * - Año actual (=== now.getFullYear()): disponible a partir del 10 de diciembre (mes 11, día >= 10).
+ * - Años futuros (> now.getFullYear()): no disponible.
+ */
+export function isWrappedAvailable(now: Date, targetYear: number): boolean {
+  const currentYear = now.getFullYear();
+  if (targetYear < currentYear) {
+    return true;
+  }
+  if (targetYear === currentYear) {
+    return now.getMonth() === 11 && now.getDate() >= 10;
+  }
+  return false;
+}
+
+/**
  * Calcula de forma 100% pura y determinista las estadísticas anuales de Hoardex Wrapped.
  * No depende de `new Date()` sin parámetro ni del DOM.
  */

@@ -1,21 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { Download, FileSpreadsheet, Layers, LogIn, Moon, Sparkles, Sun, Upload } from 'lucide-react';
-import { toast } from 'sonner';
+import { Layers, LogIn, Moon, Sparkles, Sun } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/components/ui/button';
 import { GamificationHeaderBar } from '@/features/gamification/components/GamificationHeaderBar';
 import { useAuth } from '@/features/sync/hooks/useAuth';
 import { AccountMenu } from '@/features/sync/components/AccountMenu';
 import { AuthDialog } from '@/features/sync/components/AuthDialog';
-import { ImportBackupDialog } from '@/features/sync/components/ImportBackupDialog';
 import { WrappedDialog } from '@/features/gamification/components/WrappedDialog';
-import { useCollectionsStore } from '@/features/collections/store/collections.store';
-import { useItemsStore } from '@/features/items/store/items.store';
-import { useGamificationStore } from '@/features/gamification/store/gamification.store';
-import { generateBackup } from '@/features/sync/core/backup';
-import { downloadCatalogCsv } from '@/features/sync/core/csv';
-import type { PersistedGamificationData } from '@/interfaces/sync.interface';
 
 export interface Props {
   className?: string;
@@ -26,53 +18,7 @@ export function Header({ className }: Props) {
   const { user, isSupabaseConfigured } = useAuth();
 
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [isImportOpen, setIsImportOpen] = useState(false);
   const [isWrappedOpen, setIsWrappedOpen] = useState(false);
-
-  const handleExportCsv = () => {
-    const collections = useCollectionsStore.getState().collections;
-    const items = useItemsStore.getState().items;
-    downloadCatalogCsv(collections, items);
-  };
-
-  const handleExportBackup = () => {
-    try {
-      const collections = useCollectionsStore.getState().collections;
-      const items = useItemsStore.getState().items;
-      const gam = useGamificationStore.getState();
-
-      const gamData: PersistedGamificationData = {
-        totalXp: gam.totalXp,
-        streak: gam.streak,
-        unlockedAchievements: gam.unlockedAchievements,
-        claimedChallengeIds: gam.claimedChallengeIds,
-        rewardedCollectionIds: gam.rewardedCollectionIds,
-        xpHistory: gam.xpHistory,
-      };
-
-      const now = new Date().toISOString();
-      const backup = generateBackup(collections, items, gamData, now);
-
-      const blob = new Blob([JSON.stringify(backup, null, 2)], {
-        type: 'application/json',
-      });
-      const url = URL.createObjectURL(blob);
-      const dateStr = now.slice(0, 10);
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `hoardex-backup-${dateStr}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      toast.success('Copia de seguridad descargada.');
-    } catch (err: unknown) {
-      console.error('Error al exportar copia de seguridad:', err);
-      toast.error('No se pudo generar la copia de seguridad.');
-    }
-  };
 
   return (
     <header
@@ -112,54 +58,17 @@ export function Header({ className }: Props) {
           {user ? (
             <AccountMenu />
           ) : (
-            <>
-              {/* Acceso a backup local y exportación CSV para usuarios invitados o sin backend */}
-              <div className="flex items-center gap-0.5">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleExportCsv}
-                  aria-label="Exportar catálogo a CSV"
-                  title="Exportar catálogo a CSV"
-                  className="rounded-full text-foreground/80 hover:text-foreground h-8 w-8"
-                >
-                  <FileSpreadsheet className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleExportBackup}
-                  aria-label="Exportar copia de seguridad"
-                  title="Exportar copia de seguridad"
-                  className="rounded-full text-foreground/80 hover:text-foreground h-8 w-8"
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsImportOpen(true)}
-                  aria-label="Restaurar copia de seguridad"
-                  title="Restaurar copia de seguridad"
-                  className="rounded-full text-foreground/80 hover:text-foreground h-8 w-8"
-                >
-                  <Upload className="h-4 w-4" />
-                </Button>
-              </div>
-
-              {/* Botón Iniciar sesión si Supabase está configurado */}
-              {isSupabaseConfigured && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsAuthOpen(true)}
-                  className="gap-1.5 text-xs sm:text-sm font-medium rounded-full px-3 h-8 border-border/80"
-                >
-                  <LogIn className="h-3.5 w-3.5 text-primary" />
-                  <span className="hidden sm:inline">Iniciar sesión</span>
-                </Button>
-              )}
-            </>
+            isSupabaseConfigured && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsAuthOpen(true)}
+                className="gap-1.5 text-xs sm:text-sm font-medium rounded-full px-3 h-8 border-border/80"
+              >
+                <LogIn className="h-3.5 w-3.5 text-primary" />
+                <span className="hidden sm:inline">Iniciar sesión</span>
+              </Button>
+            )
           )}
 
           {/* Selector de tema */}
@@ -185,7 +94,6 @@ export function Header({ className }: Props) {
 
       {/* Diálogos modales */}
       <AuthDialog open={isAuthOpen} onOpenChange={setIsAuthOpen} />
-      <ImportBackupDialog open={isImportOpen} onOpenChange={setIsImportOpen} />
       <WrappedDialog open={isWrappedOpen} onOpenChange={setIsWrappedOpen} />
     </header>
   );

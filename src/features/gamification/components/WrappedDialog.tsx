@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Calendar,
   Frown,
+  Lock,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -25,7 +26,7 @@ import { Button } from '@/components/ui/button';
 import { useCollectionsStore } from '@/features/collections/store/collections.store';
 import { useItemsStore } from '@/features/items/store/items.store';
 import { useGamificationStore } from '@/features/gamification/store/gamification.store';
-import { calculateWrappedStats } from '../core/wrapped';
+import { calculateWrappedStats, isWrappedAvailable } from '../core/wrapped';
 import { generateWrappedShareText, generateWrappedSvg } from '../core/wrappedCard';
 import { CollectionIcon } from '@/lib/icons';
 import { CoverImage } from '@/components/custom/CoverImage';
@@ -91,6 +92,11 @@ export function WrappedDialog({
     setSlideIndex(0);
   }
 
+  // Comprobación de disponibilidad estacional (desbloqueo a partir del 10 de diciembre para el año en curso)
+  const isAvailable = useMemo(() => {
+    return isWrappedAvailable(new Date(), selectedYear);
+  }, [selectedYear]);
+
   // Cálculo de estadísticas Wrapped memoizado
   const stats = useMemo(() => {
     return calculateWrappedStats(
@@ -111,7 +117,7 @@ export function WrappedDialog({
 
   // Navegación por teclado
   useEffect(() => {
-    if (!open) return;
+    if (!open || !isAvailable || !stats.hasActivity) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') {
@@ -128,7 +134,7 @@ export function WrappedDialog({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, nextSlide, prevSlide]);
+  }, [open, isAvailable, stats.hasActivity, nextSlide, prevSlide]);
 
   // Gestos táctiles de deslizamiento (swipe horizontal)
   const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
@@ -206,9 +212,11 @@ export function WrappedDialog({
 
         {/* Región ARIA Live para anuncios de diapositiva */}
         <div className="sr-only" aria-live="polite">
-          {stats.hasActivity
-            ? `Diapositiva ${slideIndex + 1} de ${TOTAL_SLIDES}: ${SLIDE_TITLES[slideIndex]}`
-            : 'Hoardex Wrapped sin actividad'}
+          {!isAvailable
+            ? `Hoardex Wrapped ${selectedYear} disponible a partir del 10 de diciembre`
+            : stats.hasActivity
+              ? `Diapositiva ${slideIndex + 1} de ${TOTAL_SLIDES}: ${SLIDE_TITLES[slideIndex]}`
+              : 'Hoardex Wrapped sin actividad'}
         </div>
 
         {/* Barra superior: Selector de año y barras segmentadas estilo Stories */}
@@ -241,8 +249,8 @@ export function WrappedDialog({
             </div>
           </div>
 
-          {/* Barras de progreso segmentadas estilo Stories (solo si hay actividad) */}
-          {stats.hasActivity && (
+          {/* Barras de progreso segmentadas estilo Stories (solo si está disponible y hay actividad) */}
+          {isAvailable && stats.hasActivity && (
             <div className="flex items-center gap-1.5 w-full pt-1">
               {Array.from({ length: TOTAL_SLIDES }).map((_, idx) => (
                 <div
@@ -263,11 +271,32 @@ export function WrappedDialog({
 
         {/* Contenido de la diapositiva */}
         <div
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
+          onTouchStart={isAvailable && stats.hasActivity ? handleTouchStart : undefined}
+          onTouchEnd={isAvailable && stats.hasActivity ? handleTouchEnd : undefined}
           className="p-6 sm:p-8 min-h-[420px] flex flex-col justify-center select-none"
         >
-          {!stats.hasActivity ? (
+          {!isAvailable ? (
+            /* Estado Bloqueado Estacionalmente (antes del 10 de diciembre) */
+            <div className="flex flex-col items-center text-center max-w-md mx-auto py-8">
+              <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mb-4 shadow-inner">
+                <Lock className="w-8 h-8 text-indigo-400" />
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-100 mb-2">
+                Próximamente
+              </h3>
+              <p className="text-sm text-slate-300 leading-relaxed mb-6">
+                Tu Hoardex Wrapped {selectedYear} estará disponible a partir del 10 de diciembre. ¡Sigue completando y puntuando tus ítems para hacerlo épico!
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onOpenChange(false)}
+                className="border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700"
+              >
+                Entendido
+              </Button>
+            </div>
+          ) : !stats.hasActivity ? (
             /* Estado Empático sin actividad */
             <div className="flex flex-col items-center text-center max-w-md mx-auto py-8">
               <div className="w-16 h-16 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 mb-4 shadow-inner">
@@ -655,7 +684,7 @@ export function WrappedDialog({
         </div>
 
         {/* Pie de navegación accesible: Botones Anterior y Siguiente */}
-        {stats.hasActivity && (
+        {isAvailable && stats.hasActivity && (
           <div className="p-4 sm:p-5 border-t border-slate-800 bg-slate-900/80 backdrop-blur-xs flex items-center justify-between gap-3">
             <Button
               variant="outline"

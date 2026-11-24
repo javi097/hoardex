@@ -7,9 +7,9 @@
   - Generador social de texto con emojis y tarjeta vectorial temática `generateWrappedSvg` con `escapeXml`.
   - Serializador RFC 4180 `exportToCsv` con BOM UTF-8 (`\uFEFF`) y helper de descarga `downloadCatalogCsv`.
   - Modal interactivo accesible `WrappedDialog` con 6 diapositivas estilo Stories, teclado, swipe y reducción de movimiento.
-  - Integración completa de Wrapped y CSV en `Header`, `AccountMenu` y `AchievementsPage`.
+  - Integración de Wrapped accesible en `Header`, `AccountMenu` y `AchievementsPage`. Desbloqueo estacional (`isWrappedAvailable`) a partir del 10 de diciembre.
   - Configuración Vercel (`vercel.json`), `.env.example`, metadatos SEO/Open Graph/Twitter Cards en `index.html`.
-- **Métricas globales:** 48 suites, 312 tests pasando (100% verde), 0 errores `tsc`, 0 `any` o `as any`, 0 warnings lint, build en 613ms.
+- **Métricas globales:** 48 suites, 316 tests pasando (100% verde), 0 errores `tsc`, 0 `any` o `as any`, 0 warnings lint, build en 1.92s.
 
 ## Decisiones de arquitectura (y su porqué)
 - **Local-First & Resiliencia:** App 100% funcional sin conexión ni Supabase; respaldo en JSON versionado y CSV RFC 4180.

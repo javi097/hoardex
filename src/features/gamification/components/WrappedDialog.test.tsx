@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { toast } from 'sonner';
@@ -62,6 +62,8 @@ describe('WrappedDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Por defecto fijamos la fecha en época navideña (15 dic 2026) para que Wrapped esté desbloqueado
+    vi.setSystemTime(new Date('2026-12-15T12:00:00Z'));
     useCollectionsStore.setState({ collections: [] });
     useItemsStore.setState({ items: [] });
     useGamificationStore.getState().resetGamification();
@@ -81,11 +83,64 @@ describe('WrappedDialog', () => {
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('renderiza el diálogo accesible cuando open es true', () => {
     render(<WrappedDialog open={true} onOpenChange={onOpenChange} />);
 
     expect(screen.getByRole('dialog')).toBeDefined();
     expect(screen.getByRole('dialog').getAttribute('aria-label')).toBe('Hoardex Wrapped');
+  });
+
+  it('muestra pantalla de bloqueo estacional cuando la fecha actual es previa al 10 de diciembre', () => {
+    vi.setSystemTime(new Date('2026-11-24T12:00:00Z'));
+    useCollectionsStore.setState({ collections: mockCollections });
+    useItemsStore.setState({ items: mockItems });
+
+    render(<WrappedDialog open={true} onOpenChange={onOpenChange} initialYear={2026} />);
+
+    expect(screen.getByText('Próximamente')).toBeDefined();
+    expect(
+      screen.getByText(
+        'Tu Hoardex Wrapped 2026 estará disponible a partir del 10 de diciembre. ¡Sigue completando y puntuando tus ítems para hacerlo épico!'
+      )
+    ).toBeDefined();
+
+    // El botón Entendido cierra el modal
+    const okBtn = screen.getByRole('button', { name: /Entendido/i });
+    fireEvent.click(okBtn);
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+
+    // No deben mostrarse las barras de progreso o diapositivas
+    expect(screen.queryByText('1 de 6')).toBeNull();
+  });
+
+  it('permite ver un año anterior desbloqueado aunque el año actual esté bloqueado', () => {
+    vi.setSystemTime(new Date('2026-11-24T12:00:00Z'));
+    useCollectionsStore.setState({ collections: mockCollections });
+    useItemsStore.setState({
+      items: [
+        {
+          id: 'item-2025',
+          collectionId: 'col-1',
+          title: 'Zelda 2025',
+          statusId: 'st-completed',
+          xpAwarded: true,
+          rating: 5,
+          meta: {},
+          createdAt: '2025-06-01T10:00:00Z',
+          updatedAt: '2025-06-15T12:00:00Z',
+        },
+      ],
+    });
+
+    render(<WrappedDialog open={true} onOpenChange={onOpenChange} initialYear={2025} />);
+
+    // Año 2025 está disponible
+    expect(screen.getByText(/Tu Año en Colección/i)).toBeDefined();
+    expect(screen.getByText('1 de 6')).toBeDefined();
   });
 
   it('muestra estado empático cuando no hay actividad registrada en el año seleccionado', () => {
