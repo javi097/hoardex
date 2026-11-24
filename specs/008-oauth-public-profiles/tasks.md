@@ -1,0 +1,93 @@
+# Tareas de Implementación — Spec 008
+**Etapa 2: Autenticación OAuth (Google, Apple, GitHub), Perfiles de Usuario y Privacidad de Colecciones**
+
+---
+
+- [x] **T1. Contratos de perfil y visibilidad, y actualización del esquema SQL con RLS.** RF-02.1, RF-02.2, RF-02.3, RF-02.4, RF-02.5, RF-02.6, RF-02.7, RNF-02
+  - Crear `src/interfaces/user.interface.ts`:
+    - Definir contratos TypeScript con cero `any`: `Profile`, `ProfileRow`, `UpdateProfileParams`, `PublicProfileData` y `UsernameValidationResult`.
+  - Actualizar `src/interfaces/collection.interface.ts`:
+    - Añadir propiedad opcional `isPublic?: boolean` a `Collection`, `CreateCollectionParams` y `UpdateCollectionParams`.
+  - Actualizar `src/interfaces/sync.interface.ts`:
+    - Añadir `is_public?: boolean` a `CollectionRow`.
+    - Incorporar la definición tipada de la tabla `profiles` en `Database['public']['Tables']`.
+  - Actualizar `supabase/schema.sql`:
+    - Crear tabla `public.profiles` con constraints de formato para `username` (`^[a-z0-9_]{3,20}$`) y clave foránea en cascada a `auth.users(id)`.
+    - Crear función y trigger PostgreSQL `handle_new_user()` (`SECURITY DEFINER`) para auto-crear perfil con `@username` sanitizado determinista y avatar de metadatos OAuth.
+    - Añadir columna `is_public` (boolean default true) a la tabla `collections`.
+    - Definir políticas RLS granulares para `profiles` (lectura pública si `is_public = true` o dueño; mutación solo dueño).
+    - Actualizar políticas RLS de `collections`, `items` y `gamification_state` para proteger colecciones privadas, retos personales, historial de XP y Hoardex Wrapped.
+  - Hecho cuando: `npx tsc --noEmit` compile sin errores con cero `any`.
+
+- [ ] **T2. Lógica pura de perfiles (`profiles.ts`), mappers de sincronización y tests unitarios.** RF-02.1, RF-03.3, RF-04.1, RNF-02, RNF-03
+  - Crear `src/features/users/core/profiles.ts`:
+    - Implementar `validateUsername(username: string): UsernameValidationResult` (3-20 caracteres, únicamente minúsculas `a-z`, dígitos `0-9` y `_`).
+    - Implementar `generateInitials(displayName: string, username?: string): string` (1 o 2 letras mayúsculas).
+    - Implementar mappers puros `mapProfileRowToProfile(row: ProfileRow): Profile` y `mapProfileToRow(profile: Partial<Profile> & { id: string }): Partial<ProfileRow>`.
+    - Implementar `filterPublicCollections(collections: Collection[]): Collection[]`.
+  - Crear `src/features/users/core/profiles.test.ts` con cobertura total de validaciones (longitud, caracteres especiales, vacíos), iniciales, mapeos bidireccionales y filtrado de colecciones públicas.
+  - Actualizar `src/features/sync/core/mappers.ts`:
+    - Mapear `isPublic: row.is_public ?? true` en `mapCollectionRowToCollection`.
+    - Mapear `is_public: collection.isPublic ?? true` en `mapCollectionToRow`.
+  - Actualizar `src/features/sync/core/mappers.test.ts` verificando el mapeo de `isPublic` tanto en deserialización como en serialización.
+  - Actualizar `src/features/collections/core/templates.ts` (`isPublic: params.isPublic ?? true`) y `templates.test.ts`.
+  - Hecho cuando: `npm run test src/features/users/core/profiles.test.ts src/features/sync/core/mappers.test.ts src/features/collections/core/templates.test.ts` pase al 100%.
+
+- [ ] **T3. Store de perfil, hooks de datos (`useProfile`, `usePublicProfile`) y ampliación de `useAuth` con OAuth.** RF-01.1, RF-01.2, RF-01.3, RF-01.5, RF-01.6, RF-03.5, RF-05.2, RNF-01
+  - Crear `src/features/users/store/profile.store.ts`:
+    - Store Zustand con estado `profile: Profile | null`, `isLoading: boolean` y acciones inmutables `setProfile`, `updateProfile` y `clearProfile`.
+  - Crear `src/features/users/store/profile.store.test.ts` validando inmutabilidad y mutaciones parciales.
+  - Crear `src/features/users/hooks/useProfile.ts`:
+    - Hook que consulte y sincronice el perfil del usuario autenticado contra Supabase (`profiles`), hidratando `profile.store`.
+  - Crear `src/features/users/hooks/useProfile.test.ts`.
+  - Crear `src/features/users/hooks/usePublicProfile.ts`:
+    - Hook que consulte los datos agregados de un usuario público por `@username` (`profiles`, colecciones públicas, ítems públicos y gamificación pública).
+  - Crear `src/features/users/hooks/usePublicProfile.test.ts`.
+  - Actualizar `src/features/sync/hooks/useAuth.ts`:
+    - Exponer método `signInWithOAuth(provider: 'google' | 'apple' | 'github')` redirigiendo a `window.location.origin`.
+    - Manejar la llegada de sesión tras callback OAuth disparando la sincronización y conciliación LWW con `useSyncEngine.syncNow()`.
+  - Actualizar `src/features/sync/hooks/useAuth.test.ts` probando la invocación de `signInWithOAuth` y la gestión de errores.
+  - Hecho cuando: `npm run test` para stores y hooks de usuarios y autenticación pase al 100%.
+
+- [ ] **T4. Componentes de identidad y privacidad (`UserAvatar`, `ProfileSettingsDialog`, botones OAuth y visibilidad en colecciones).** RF-01.2, RF-01.4, RF-03.1, RF-03.2, RF-03.3, RF-03.4, RF-04.1, RF-04.2, RF-04.3, RNF-04
+  - Crear `src/features/users/components/UserAvatar.tsx` (+ `UserAvatar.test.tsx`):
+    - Componente accesible para renderizar avatar con imagen externa o fallback con iniciales y gradiente temático.
+  - Crear `src/features/users/components/ProfileSettingsDialog.tsx` (+ `ProfileSettingsDialog.test.tsx`):
+    - Diálogo modal accesible (`role="dialog"`, `aria-modal="true"`) para editar `@username` (con validación reactiva y advertencia de rotura de enlaces externos), `displayName`, `bio` (con contador de 280 caracteres), `avatarUrl` y switch `isPublic`.
+  - Actualizar `src/features/sync/components/AuthDialog.tsx` (+ `AuthDialog.test.tsx`):
+    - Añadir fila de 3 botones OAuth accesibles con iconos SVG oficiales (Google, Apple, GitHub), estados de carga y manejo defensivo ante fallos.
+  - Actualizar `src/features/sync/components/AccountMenu.tsx` (+ `AccountMenu.test.tsx`):
+    - Mostrar avatar y `@username` en la cabecera del menú.
+    - Añadir enlaces/acciones: *"Ver mi perfil público"* (`/u/${profile.username}`) y *"Editar perfil"* (abre `ProfileSettingsDialog`).
+  - Actualizar `src/features/collections/components/CollectionForm.tsx` (+ `CollectionForm.test.tsx`):
+    - Añadir selector/switch accesible de visibilidad (`Pública` vs. `Privada`).
+  - Actualizar `src/features/collections/components/CollectionCard.tsx`:
+    - Renderizar icono accesible de candado (`Lock`) cuando `isPublic === false`.
+  - Hecho cuando: Todas las suites de componentes afectados pasen al 100% en Vitest.
+
+- [ ] **T5. Página pública `/u/:username` (`PublicProfilePage.tsx`) y registro de ruta.** RF-05.1, RF-05.2, RF-05.3, RF-05.4, RF-05.5, RF-05.6, RNF-04
+  - Crear `src/pages/PublicProfilePage.tsx`:
+    - Vista pública accesible para la ruta `/u/:username` sin requerir autenticación.
+    - Cabecera con avatar grande, `displayName`, `@username`, biografía y botón accesible *"Compartir perfil"* al portapapeles con confirmación toast.
+    - Medallas de gamificación pública: nivel, título, XP acumulada y racha récord.
+    - Estantería de colecciones públicas con portadas, estados de completitud, valoraciones con estrellas y notas.
+    - Vitrina de logros desbloqueados por el usuario.
+    - Gestión de estados defensivos: skeleton de carga, 404 amigable (*"Coleccionista no encontrado"*) y estado de perfil privado (*"Este perfil es privado"*).
+    - Verificación estricta: nunca renderizar colecciones con `isPublic === false`, historial privado ni el diálogo de *Hoardex Wrapped*.
+  - En `src/App.tsx`:
+    - Registrar la ruta dinámica `<Route path="/u/:username" element={<PublicProfilePage />} />`.
+  - Crear `src/pages/PublicProfilePage.test.tsx` cubriendo todos los estados (cargando, 404, privado, público completo y aislamiento de colecciones privadas).
+  - Hecho cuando: `npm run test src/pages/PublicProfilePage.test.tsx src/App.test.tsx` pase al 100%.
+
+- [ ] **T6. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-02, RNF-03, RNF-04, RNF-05
+  - Ejecutar verificación estática completa: `npx tsc --noEmit` (cero errores, cero `any`), `npm run lint`, `npm run test` (suite completa) y `npm run build`.
+  - Levantar `npm run dev` y validar con Chrome DevTools MCP en `http://localhost:5173/`:
+    - Comprobar botones OAuth en `AuthDialog` con sus iconos y estados de carga.
+    - Probar `ProfileSettingsDialog`: edición de `@username`, nombre, biografía, avatar y visibilidad global, verificando el aviso de enlaces externos.
+    - Crear/editar colecciones privadas y verificar el icono de candado en `CollectionCard`.
+    - Navegar a `/u/:username` verificando la estantería pública y comprobando que las colecciones privadas y el Wrapped quedan totalmente aislados.
+    - Comprobar respuestas ante perfiles 404 y privados.
+    - Validar comportamiento responsive (móvil 375x667 y desktop) y temas claro y oscuro sin errores en consola.
+  - Marcar todos los criterios en `specs/008-oauth-public-profiles/spec.md` (estado `implementada`) y `tasks.md`.
+  - Actualizar `MEMORY.md` (< 50 líneas) documentando las decisiones y finalización de la Spec 008.
+  - Hecho cuando: Todas las suites estén en verde, la UI esté verificada en DevTools MCP y `MEMORY.md` esté actualizado.

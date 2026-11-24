@@ -15,6 +15,7 @@ export interface Collection {
   accentColor: string;
   provider: ProviderType;
   statuses: CollectionStatus[];
+  isPublic?: boolean;
   createdAt: string;
   updatedAt?: string;
 }
@@ -27,4 +28,24 @@ export interface CollectionTemplate {
   accentColor: string;
   provider: ProviderType;
   defaultStatuses: CollectionStatus[];
+}
+
+export interface CreateCollectionParams {
+  name: string;
+  description?: string;
+  icon: string;
+  accentColor: string;
+  provider: ProviderType;
+  statuses: CollectionStatus[];
+  isPublic?: boolean;
+}
+
+export interface UpdateCollectionParams {
+  name?: string;
+  description?: string;
+  icon?: string;
+  accentColor?: string;
+  provider?: ProviderType;
+  statuses?: CollectionStatus[];
+  isPublic?: boolean;
 }

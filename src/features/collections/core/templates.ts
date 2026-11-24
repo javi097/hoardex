@@ -2,17 +2,10 @@ import type {
   Collection,
   CollectionStatus,
   CollectionTemplate,
-  ProviderType,
+  CreateCollectionParams,
 } from '@/interfaces/collection.interface';
 
-export interface CreateCollectionParams {
-  name: string;
-  description?: string;
-  icon: string;
-  accentColor: string;
-  provider: ProviderType;
-  statuses: CollectionStatus[];
-}
+export type { CreateCollectionParams };
 
 export function validateStatuses(statuses: CollectionStatus[]): void {
   const completed = statuses.filter((status) => status.isCompleted);
@@ -37,6 +30,7 @@ export function createCollection(
     accentColor: params.accentColor,
     provider: params.provider,
     statuses: params.statuses,
+    isPublic: params.isPublic ?? true,
     createdAt: now,
   };
 }

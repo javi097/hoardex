@@ -5,6 +5,7 @@ import type {
   UnlockedAchievement,
   XpEvent,
 } from './gamification.interface';
+import type { ProfileRow } from './user.interface';
 
 export type SyncStatus = 'local' | 'syncing' | 'synced' | 'error';
 
@@ -20,6 +21,7 @@ export type CollectionRow = {
   accent_color: string;
   provider: string;
   statuses: CollectionStatus[];
+  is_public?: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -81,6 +83,12 @@ export interface Database {
         Row: GamificationStateRow;
         Insert: GamificationStateRow;
         Update: Partial<GamificationStateRow>;
+        Relationships: [];
+      };
+      profiles: {
+        Row: ProfileRow;
+        Insert: ProfileRow;
+        Update: Partial<ProfileRow>;
         Relationships: [];
       };
     };
