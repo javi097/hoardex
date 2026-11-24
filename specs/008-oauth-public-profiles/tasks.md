@@ -65,7 +65,7 @@
     - Renderizar icono accesible de candado (`Lock`) cuando `isPublic === false`.
   - Hecho cuando: Todas las suites de componentes afectados pasen al 100% en Vitest.
 
-- [ ] **T5. Página pública `/u/:username` (`PublicProfilePage.tsx`) y registro de ruta.** RF-05.1, RF-05.2, RF-05.3, RF-05.4, RF-05.5, RF-05.6, RNF-04
+- [x] **T5. Página pública `/u/:username` (`PublicProfilePage.tsx`) y registro de ruta.** RF-05.1, RF-05.2, RF-05.3, RF-05.4, RF-05.5, RF-05.6, RNF-04
   - Crear `src/pages/PublicProfilePage.tsx`:
     - Vista pública accesible para la ruta `/u/:username` sin requerir autenticación.
     - Cabecera con avatar grande, `displayName`, `@username`, biografía y botón accesible *"Compartir perfil"* al portapapeles con confirmación toast.
