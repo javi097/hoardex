@@ -1,15 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import {
   AlertCircle,
   CheckCircle2,
   CloudOff,
   Download,
+  ExternalLink,
   FileSpreadsheet,
   LogOut,
   RefreshCw,
   Sparkles,
   Upload,
-  User as UserIcon,
+  UserCog,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -17,6 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/features/sync/hooks/useAuth';
 import { useSyncEngine } from '@/features/sync/hooks/useSyncEngine';
+import { useProfileStore } from '@/features/users/store/profile.store';
 import { useCollectionsStore } from '@/features/collections/store/collections.store';
 import { useItemsStore } from '@/features/items/store/items.store';
 import { useGamificationStore } from '@/features/gamification/store/gamification.store';
@@ -25,6 +28,8 @@ import { downloadCatalogCsv } from '@/features/sync/core/csv';
 import type { PersistedGamificationData } from '@/interfaces/sync.interface';
 import { ImportBackupDialog } from './ImportBackupDialog';
 import { WrappedDialog } from '@/features/gamification/components/WrappedDialog';
+import { UserAvatar } from '@/features/users/components/UserAvatar';
+import { ProfileSettingsDialog } from '@/features/users/components/ProfileSettingsDialog';
 
 export interface Props {
   className?: string;
@@ -33,10 +38,13 @@ export interface Props {
 export function AccountMenu({ className }: Props) {
   const { user, signOut } = useAuth();
   const { syncNow, syncStatus, lastSyncedAt } = useSyncEngine();
+  const profile = useProfileStore((state) => state.profile);
+  const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isWrappedOpen, setIsWrappedOpen] = useState(false);
+  const [isProfileSettingsOpen, setIsProfileSettingsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Cerrar el menú al hacer clic fuera o pulsar Escape
@@ -132,6 +140,9 @@ export function AccountMenu({ className }: Props) {
       })
     : null;
 
+  const displayName = profile?.displayName || user.email || 'Usuario';
+  const username = profile?.username;
+
   return (
     <div ref={menuRef} className={`relative inline-block ${className ?? ''}`}>
       {/* Botón trigger accesible */}
@@ -144,12 +155,14 @@ export function AccountMenu({ className }: Props) {
         aria-label="Menú de cuenta y sincronización"
         className="relative flex items-center gap-2 rounded-full border border-border/60 bg-muted/30 px-2 py-1 hover:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <div className="relative flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold text-xs">
-          {user.email ? (
-            user.email.charAt(0).toUpperCase()
-          ) : (
-            <UserIcon className="h-3.5 w-3.5" />
-          )}
+        <div className="relative flex items-center justify-center">
+          <UserAvatar
+            avatarUrl={profile?.avatarUrl}
+            displayName={displayName}
+            username={username}
+            size="sm"
+            className="h-6 w-6 text-2xs"
+          />
 
           {/* Indicador de estado de sincronización */}
           <span
@@ -166,7 +179,7 @@ export function AccountMenu({ className }: Props) {
         </div>
 
         <span className="hidden sm:inline-block max-w-[120px] truncate text-xs font-medium text-foreground">
-          {user.email}
+          {displayName}
         </span>
       </Button>
 
@@ -177,14 +190,32 @@ export function AccountMenu({ className }: Props) {
           aria-label="Opciones de cuenta"
           className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-border/80 bg-popover/95 p-2 shadow-xl backdrop-blur-md z-50 text-foreground animate-in fade-in-0 zoom-in-95"
         >
-          {/* Cabecera con email y estado */}
-          <div className="px-2 py-2 space-y-1.5">
-            <p className="text-xs text-muted-foreground">Sesión iniciada con</p>
-            <p className="text-sm font-semibold text-foreground truncate" title={user.email}>
-              {user.email}
-            </p>
+          {/* Cabecera con avatar, nombre, username y estado de sincronización */}
+          <div className="px-2 py-2 space-y-2">
+            <div className="flex items-center gap-2.5">
+              <UserAvatar
+                avatarUrl={profile?.avatarUrl}
+                displayName={displayName}
+                username={username}
+                size="md"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-foreground truncate" title={displayName}>
+                  {displayName}
+                </p>
+                {username ? (
+                  <p className="text-xs text-muted-foreground truncate" title={`@${username}`}>
+                    @{username}
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground truncate" title={user.email}>
+                    {user.email}
+                  </p>
+                )}
+              </div>
+            </div>
 
-            <div className="pt-1">
+            <div className="pt-0.5">
               {syncStatus === 'synced' && (
                 <Badge
                   variant="outline"
@@ -225,7 +256,40 @@ export function AccountMenu({ className }: Props) {
 
           <Separator className="my-1.5" />
 
-          {/* Acciones */}
+          {/* Opciones de perfil social */}
+          <div className="space-y-0.5">
+            {username && (
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate(`/u/${username}`);
+                }}
+                className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium text-foreground hover:bg-muted transition-colors"
+              >
+                <ExternalLink className="h-4 w-4 text-primary" />
+                <span>Ver mi perfil público</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setIsOpen(false);
+                setIsProfileSettingsOpen(true);
+              }}
+              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium text-foreground hover:bg-muted transition-colors"
+            >
+              <UserCog className="h-4 w-4 text-primary" />
+              <span>Editar perfil</span>
+            </button>
+          </div>
+
+          <Separator className="my-1.5" />
+
+          {/* Acciones de catálogo y backup */}
           <div className="space-y-0.5">
             <button
               type="button"
@@ -303,6 +367,12 @@ export function AccountMenu({ className }: Props) {
           </button>
         </div>
       )}
+
+      {/* Modal de edición de perfil */}
+      <ProfileSettingsDialog
+        open={isProfileSettingsOpen}
+        onOpenChange={setIsProfileSettingsOpen}
+      />
 
       {/* Modal de importación de backup */}
       <ImportBackupDialog

@@ -19,7 +19,7 @@
     - Actualizar políticas RLS de `collections`, `items` y `gamification_state` para proteger colecciones privadas, retos personales, historial de XP y Hoardex Wrapped.
   - Hecho cuando: `npx tsc --noEmit` compile sin errores con cero `any`.
 
-- [ ] **T2. Lógica pura de perfiles (`profiles.ts`), mappers de sincronización y tests unitarios.** RF-02.1, RF-03.3, RF-04.1, RNF-02, RNF-03
+- [x] **T2. Lógica pura de perfiles (`profiles.ts`), mappers de sincronización y tests unitarios.** RF-02.1, RF-03.3, RF-04.1, RNF-02, RNF-03
   - Crear `src/features/users/core/profiles.ts`:
     - Implementar `validateUsername(username: string): UsernameValidationResult` (3-20 caracteres, únicamente minúsculas `a-z`, dígitos `0-9` y `_`).
     - Implementar `generateInitials(displayName: string, username?: string): string` (1 o 2 letras mayúsculas).
@@ -33,7 +33,7 @@
   - Actualizar `src/features/collections/core/templates.ts` (`isPublic: params.isPublic ?? true`) y `templates.test.ts`.
   - Hecho cuando: `npm run test src/features/users/core/profiles.test.ts src/features/sync/core/mappers.test.ts src/features/collections/core/templates.test.ts` pase al 100%.
 
-- [ ] **T3. Store de perfil, hooks de datos (`useProfile`, `usePublicProfile`) y ampliación de `useAuth` con OAuth.** RF-01.1, RF-01.2, RF-01.3, RF-01.5, RF-01.6, RF-03.5, RF-05.2, RNF-01
+- [x] **T3. Store de perfil, hooks de datos (`useProfile`, `usePublicProfile`) y ampliación de `useAuth` con OAuth.** RF-01.1, RF-01.2, RF-01.3, RF-01.5, RF-01.6, RF-03.5, RF-05.2, RNF-01
   - Crear `src/features/users/store/profile.store.ts`:
     - Store Zustand con estado `profile: Profile | null`, `isLoading: boolean` y acciones inmutables `setProfile`, `updateProfile` y `clearProfile`.
   - Crear `src/features/users/store/profile.store.test.ts` validando inmutabilidad y mutaciones parciales.
@@ -49,7 +49,7 @@
   - Actualizar `src/features/sync/hooks/useAuth.test.ts` probando la invocación de `signInWithOAuth` y la gestión de errores.
   - Hecho cuando: `npm run test` para stores y hooks de usuarios y autenticación pase al 100%.
 
-- [ ] **T4. Componentes de identidad y privacidad (`UserAvatar`, `ProfileSettingsDialog`, botones OAuth y visibilidad en colecciones).** RF-01.2, RF-01.4, RF-03.1, RF-03.2, RF-03.3, RF-03.4, RF-04.1, RF-04.2, RF-04.3, RNF-04
+- [x] **T4. Componentes de identidad y privacidad (`UserAvatar`, `ProfileSettingsDialog`, botones OAuth y visibilidad en colecciones).** RF-01.2, RF-01.4, RF-03.1, RF-03.2, RF-03.3, RF-03.4, RF-04.1, RF-04.2, RF-04.3, RNF-04
   - Crear `src/features/users/components/UserAvatar.tsx` (+ `UserAvatar.test.tsx`):
     - Componente accesible para renderizar avatar con imagen externa o fallback con iniciales y gradiente temático.
   - Crear `src/features/users/components/ProfileSettingsDialog.tsx` (+ `ProfileSettingsDialog.test.tsx`):

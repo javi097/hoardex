@@ -6,14 +6,17 @@ import { AuthDialog } from './AuthDialog';
 
 const mockSignIn = vi.fn();
 const mockSignUp = vi.fn();
+const mockSignInWithOAuth = vi.fn();
+let mockIsConfigured = true;
 
 vi.mock('@/features/sync/hooks/useAuth', () => ({
   useAuth: () => ({
     signIn: mockSignIn,
     signUp: mockSignUp,
+    signInWithOAuth: mockSignInWithOAuth,
     signOut: vi.fn(),
     user: null,
-    isSupabaseConfigured: true,
+    isSupabaseConfigured: mockIsConfigured,
   }),
 }));
 
@@ -30,6 +33,8 @@ describe('AuthDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockIsConfigured = true;
+    mockSignInWithOAuth.mockResolvedValue({ success: true });
   });
 
   it('renders modal dialog when open is true', () => {
@@ -127,5 +132,51 @@ describe('AuthDialog', () => {
       'Cuenta creada con éxito. ¡Sesión iniciada!'
     );
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('renders OAuth buttons when isSupabaseConfigured is true', () => {
+    render(<AuthDialog open={true} onOpenChange={onOpenChange} />);
+
+    expect(screen.getByRole('button', { name: /Continuar con Google/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /Continuar con Apple/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /Continuar con GitHub/i })).toBeDefined();
+  });
+
+  it('calls signInWithOAuth with correct provider when clicked', async () => {
+    const user = userEvent.setup();
+    render(<AuthDialog open={true} onOpenChange={onOpenChange} />);
+
+    await user.click(screen.getByRole('button', { name: /Continuar con Google/i }));
+    expect(mockSignInWithOAuth).toHaveBeenCalledWith('google');
+
+    await user.click(screen.getByRole('button', { name: /Continuar con Apple/i }));
+    expect(mockSignInWithOAuth).toHaveBeenCalledWith('apple');
+
+    await user.click(screen.getByRole('button', { name: /Continuar con GitHub/i }));
+    expect(mockSignInWithOAuth).toHaveBeenCalledWith('github');
+  });
+
+  it('displays error and toast when OAuth login fails', async () => {
+    const user = userEvent.setup();
+    mockSignInWithOAuth.mockResolvedValue({
+      success: false,
+      error: 'Error al autorizar con Google.',
+    });
+
+    render(<AuthDialog open={true} onOpenChange={onOpenChange} />);
+
+    await user.click(screen.getByRole('button', { name: /Continuar con Google/i }));
+
+    expect(toast.error).toHaveBeenCalledWith('Error al autorizar con Google.');
+    expect(screen.getByText('Error al autorizar con Google.')).toBeDefined();
+  });
+
+  it('does not render OAuth buttons when isSupabaseConfigured is false', () => {
+    mockIsConfigured = false;
+    render(<AuthDialog open={true} onOpenChange={onOpenChange} />);
+
+    expect(screen.queryByRole('button', { name: /Continuar con Google/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Continuar con Apple/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Continuar con GitHub/i })).toBeNull();
   });
 });

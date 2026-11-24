@@ -12,6 +12,7 @@ const mockGetSession = vi.fn();
 const mockUnsubscribe = vi.fn();
 const mockOnAuthStateChange = vi.fn();
 const mockSignInWithPassword = vi.fn();
+const mockSignInWithOAuth = vi.fn();
 const mockSignUp = vi.fn();
 const mockSignOut = vi.fn();
 
@@ -25,6 +26,8 @@ vi.mock('@/lib/supabase', () => ({
       ) => mockOnAuthStateChange(cb),
       signInWithPassword: (credentials: { email: string; password: string }) =>
         mockSignInWithPassword(credentials),
+      signInWithOAuth: (params: { provider: string; options?: { redirectTo?: string } }) =>
+        mockSignInWithOAuth(params),
       signUp: (credentials: { email: string; password: string }) =>
         mockSignUp(credentials),
       signOut: () => mockSignOut(),
@@ -259,5 +262,46 @@ describe('useAuth', () => {
     expect(toast.info).toHaveBeenCalledWith(
       'Sesión cerrada. Ahora estás en modo local.'
     );
+  });
+
+  it('calls signInWithOAuth with correct provider and redirect URL', async () => {
+    mockSignInWithOAuth.mockResolvedValue({ error: null });
+
+    const { result } = renderHook(() => useAuth());
+
+    let res: { success: boolean; error?: string } = { success: false };
+    await act(async () => {
+      res = await result.current.signInWithOAuth('google');
+    });
+
+    expect(mockSignInWithOAuth).toHaveBeenCalledWith({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+    expect(res.success).toBe(true);
+  });
+
+  it('handles signInWithOAuth error from Supabase', async () => {
+    mockSignInWithOAuth.mockResolvedValue({
+      error: { message: 'OAuth provider error' },
+    });
+
+    const { result } = renderHook(() => useAuth());
+
+    let res: { success: boolean; error?: string } = { success: false };
+    await act(async () => {
+      res = await result.current.signInWithOAuth('github');
+    });
+
+    expect(mockSignInWithOAuth).toHaveBeenCalledWith({
+      provider: 'github',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+    expect(res.success).toBe(false);
+    expect(res.error).toBe('OAuth provider error');
   });
 });

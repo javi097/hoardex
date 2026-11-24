@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Lock } from 'lucide-react';
 import type { Collection } from '@/interfaces/collection.interface';
 import type { Item } from '@/interfaces/item.interface';
 import { CollectionIcon } from '@/lib/icons';
@@ -57,7 +57,16 @@ export function CollectionCard({ collection, items, className }: Props) {
             <CollectionIcon name={collection.icon} className="h-5 w-5" />
           </div>
 
-          <div className="flex items-center gap-1 text-xs font-semibold text-muted-foreground group-hover:text-foreground">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground group-hover:text-foreground">
+            {collection.isPublic === false && (
+              <span title="Colección privada" className="flex items-center">
+                <Lock
+                  className="h-3.5 w-3.5 text-muted-foreground"
+                  aria-label="Colección privada"
+                  role="img"
+                />
+              </span>
+            )}
             <span>
               {completedCount} / {totalCount}
             </span>

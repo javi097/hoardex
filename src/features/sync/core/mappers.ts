@@ -32,6 +32,7 @@ export function mapCollectionRowToCollection(row: CollectionRow): Collection {
     accentColor: row.accent_color,
     provider: normalizeProvider(row.provider),
     statuses: Array.isArray(row.statuses) ? row.statuses : [],
+    isPublic: row.is_public ?? true,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -54,6 +55,7 @@ export function mapCollectionToRow(
     accent_color: collection.accentColor,
     provider: collection.provider,
     statuses: collection.statuses,
+    is_public: collection.isPublic ?? true,
     created_at: collection.createdAt,
     updated_at: collection.updatedAt ?? now,
   };

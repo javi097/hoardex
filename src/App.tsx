@@ -6,11 +6,13 @@ import { AchievementsPage } from '@/pages/AchievementsPage';
 import { useGamificationSync } from '@/features/gamification/hooks/useGamificationSync';
 import { useAuth } from '@/features/sync/hooks/useAuth';
 import { useSyncEngine } from '@/features/sync/hooks/useSyncEngine';
+import { useProfile } from '@/features/users/hooks/useProfile';
 
 function App() {
   useGamificationSync();
   useAuth();
   useSyncEngine();
+  useProfile();
 
   return (
     <BrowserRouter>

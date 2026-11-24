@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 export interface Props {
   initialValues?: Partial<CreateCollectionParams>;
@@ -53,6 +54,7 @@ export function CollectionForm({
   const [statuses, setStatuses] = useState<CollectionStatus[]>(
     initialValues?.statuses ?? DEFAULT_STATUSES
   );
+  const [isPublic, setIsPublic] = useState(initialValues?.isPublic ?? true);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -82,6 +84,7 @@ export function CollectionForm({
       accentColor,
       provider,
       statuses,
+      isPublic,
     });
   };
 
@@ -139,6 +142,46 @@ export function CollectionForm({
           </Select>
         </div>
       )}
+
+      {/* Visibilidad de la colección */}
+      <div className="flex items-center justify-between rounded-xl border border-border/70 bg-muted/20 p-3">
+        <div className="space-y-0.5 pr-2">
+          <Label
+            htmlFor="collection-public-switch"
+            className="text-sm font-semibold cursor-pointer"
+          >
+            {isPublic ? 'Colección pública' : 'Colección privada'}
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            {isPublic
+              ? 'Visible para otros usuarios en tu perfil público.'
+              : 'Solo visible para ti al iniciar sesión en tu cuenta.'}
+          </p>
+        </div>
+        <button
+          type="button"
+          id="collection-public-switch"
+          role="switch"
+          aria-checked={isPublic}
+          aria-label={
+            isPublic
+              ? 'Cambiar a colección privada'
+              : 'Cambiar a colección pública'
+          }
+          onClick={() => setIsPublic(!isPublic)}
+          className={cn(
+            'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+            isPublic ? 'bg-primary' : 'bg-muted-foreground/30'
+          )}
+        >
+          <span
+            className={cn(
+              'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-background shadow-lg ring-0 transition duration-200 ease-in-out',
+              isPublic ? 'translate-x-5' : 'translate-x-0'
+            )}
+          />
+        </button>
+      </div>
 
       {/* Color de acento */}
       <div className="flex flex-col gap-1.5">

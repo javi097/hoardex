@@ -29,6 +29,7 @@ describe('mappers', () => {
         { id: 'st-1', label: 'Pendiente', isCompleted: false, order: 0 },
         { id: 'st-2', label: 'Completado', isCompleted: true, order: 1 },
       ],
+      isPublic: true,
       createdAt: '2026-11-20T10:00:00.000Z',
       updatedAt: '2026-11-20T12:00:00.000Z',
     };
@@ -45,6 +46,7 @@ describe('mappers', () => {
         { id: 'st-1', label: 'Pendiente', isCompleted: false, order: 0 },
         { id: 'st-2', label: 'Completado', isCompleted: true, order: 1 },
       ],
+      is_public: true,
       created_at: '2026-11-20T10:00:00.000Z',
       updated_at: '2026-11-20T12:00:00.000Z',
     };
@@ -84,6 +86,27 @@ describe('mappers', () => {
       const result = mapCollectionRowToCollection(rowWithNulls);
       expect(result.description).toBeUndefined();
       expect(result.provider).toBe('manual');
+    });
+
+    it('preserves isPublic = false in both mapping directions', () => {
+      const privateRow: CollectionRow = {
+        ...mockCollectionRow,
+        is_public: false,
+      };
+      const mappedCol = mapCollectionRowToCollection(privateRow);
+      expect(mappedCol.isPublic).toBe(false);
+
+      const mappedRow = mapCollectionToRow(mappedCol, 'user-123');
+      expect(mappedRow.is_public).toBe(false);
+    });
+
+    it('defaults isPublic to true when is_public is missing in CollectionRow', () => {
+      const rowWithoutIsPublic: CollectionRow = {
+        ...mockCollectionRow,
+        is_public: undefined,
+      };
+      const mappedCol = mapCollectionRowToCollection(rowWithoutIsPublic);
+      expect(mappedCol.isPublic).toBe(true);
     });
   });
 

@@ -17,6 +17,9 @@ export interface UseAuthReturn {
     email: string,
     password: string
   ) => Promise<AuthActionResult>;
+  signInWithOAuth: (
+    provider: 'google' | 'apple' | 'github'
+  ) => Promise<AuthActionResult>;
   signUp: (email: string, password: string) => Promise<AuthActionResult>;
   signOut: () => Promise<void>;
 }
@@ -119,6 +122,38 @@ export function useAuth(): UseAuthReturn {
     [setUser]
   );
 
+  const signInWithOAuth = useCallback(
+    async (
+      provider: 'google' | 'apple' | 'github'
+    ): Promise<AuthActionResult> => {
+      if (!isSupabaseConfigured || !supabase) {
+        return { success: false, error: 'Supabase no está configurado.' };
+      }
+
+      try {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider,
+          options: {
+            redirectTo: window.location.origin,
+          },
+        });
+
+        if (error) {
+          return { success: false, error: error.message };
+        }
+
+        return { success: true };
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : 'Error al iniciar sesión con OAuth.';
+        return { success: false, error: message };
+      }
+    },
+    []
+  );
+
   const signOut = useCallback(async (): Promise<void> => {
     try {
       if (isSupabaseConfigured && supabase) {
@@ -138,6 +173,7 @@ export function useAuth(): UseAuthReturn {
     isSupabaseConfigured,
     signIn,
     signInWithPassword: signIn,
+    signInWithOAuth,
     signUp,
     signOut,
   };

@@ -65,6 +65,23 @@ describe('templates core logic', () => {
       expect(collection.accentColor).toBe('#6366f1');
       expect(collection.provider).toBe('rawg');
       expect(collection.statuses).toEqual(validStatuses);
+      expect(collection.isPublic).toBe(true);
+    });
+
+    it('respects isPublic flag when creating a private collection', () => {
+      const collection = createCollection(
+        {
+          name: 'Colección Secreta',
+          icon: 'Lock',
+          accentColor: '#10b981',
+          provider: 'manual',
+          statuses: validStatuses,
+          isPublic: false,
+        },
+        fixedNow
+      );
+
+      expect(collection.isPublic).toBe(false);
     });
 
     it('throws error when creating collection without completed status', () => {
