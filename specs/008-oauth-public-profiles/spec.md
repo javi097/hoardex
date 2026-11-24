@@ -1,5 +1,5 @@
 # Spec 008 — Autenticación OAuth (Google, Apple, GitHub), Perfiles de Usuario y Privacidad de Colecciones
-Estado: aprobada
+Estado: implementada
 
 ---
 
@@ -170,21 +170,21 @@ Todo ello manteniendo intactos los principios fundamentales de la constitución:
 
 ## Criterios de finalización
 
-- [ ] Contratos TypeScript definidos en `src/interfaces/`: `Profile`, `ProfileRow`, `UpdateProfileParams`, `PublicProfileData` y campo `isPublic` en `Collection`.
-- [ ] Función pura `validateUsername` implementada en `src/features/users/core/profiles.ts` con tests unitarios al 100% en `profiles.test.ts`.
-- [ ] Mappers puros entre tipos de base de datos (`ProfileRow`) y del dominio (`Profile`) testeados en Vitest.
-- [ ] Esquema SQL en `supabase/schema.sql` actualizado con tabla `profiles`, trigger `handle_new_user`, columna `is_public` en `collections` y políticas RLS completas.
-- [ ] Botones OAuth (Google, Apple, GitHub) integrados en `AuthDialog.tsx` con iconos SVG, estados de carga y gestión de errores.
-- [ ] Detección del callback OAuth en `useAuth` y sincronización bidireccional automática en `useSyncEngine`.
-- [ ] Componente modal accesible `ProfileSettingsDialog.tsx` implementado para editar `@username`, nombre, biografía, avatar URL y visibilidad global.
-- [ ] Selector de visibilidad (`isPublic`) añadido en `CollectionForm.tsx` con icono de candado en colecciones privadas.
-- [ ] Página de perfil público `/u/:username` implementada en `src/pages/PublicProfilePage.tsx` con soporte de estados de carga, no encontrado (404), perfil privado y estanterías públicas.
-- [ ] Acceso directo a *"Editar perfil"* y *"Ver mi perfil público"* integrado en `AccountMenu.tsx`.
-- [ ] Cobertura completa de tests en Vitest para validadores, componentes y rutas.
-- [ ] `npx tsc --noEmit` completado con 0 errores (cero `any`).
-- [ ] `npm run lint` completado con 0 errores y 0 warnings.
-- [ ] `npm run test` con el 100% de tests en verde.
-- [ ] `npm run build` ejecutado con éxito.
+- [x] Contratos TypeScript definidos en `src/interfaces/`: `Profile`, `ProfileRow`, `UpdateProfileParams`, `PublicProfileData` y campo `isPublic` en `Collection`.
+- [x] Función pura `validateUsername` implementada en `src/features/users/core/profiles.ts` con tests unitarios al 100% en `profiles.test.ts`.
+- [x] Mappers puros entre tipos de base de datos (`ProfileRow`) y del dominio (`Profile`) testeados en Vitest.
+- [x] Esquema SQL en `supabase/schema.sql` actualizado con tabla `profiles`, trigger `handle_new_user`, columna `is_public` en `collections` y políticas RLS completas.
+- [x] Botones OAuth (Google, Apple, GitHub) integrados en `AuthDialog.tsx` con iconos SVG, estados de carga y gestión de errores.
+- [x] Detección del callback OAuth en `useAuth` y sincronización bidireccional automática en `useSyncEngine`.
+- [x] Componente modal accesible `ProfileSettingsDialog.tsx` implementado para editar `@username`, nombre, biografía, avatar URL y visibilidad global.
+- [x] Selector de visibilidad (`isPublic`) añadido en `CollectionForm.tsx` con icono de candado en colecciones privadas.
+- [x] Página de perfil público `/u/:username` implementada en `src/pages/PublicProfilePage.tsx` con soporte de estados de carga, no encontrado (404), perfil privado y estanterías públicas.
+- [x] Acceso directo a *"Editar perfil"* y *"Ver mi perfil público"* integrado en `AccountMenu.tsx`.
+- [x] Cobertura completa de tests en Vitest para validadores, componentes y rutas.
+- [x] `npx tsc --noEmit` completado con 0 errores (cero `any`).
+- [x] `npm run lint` completado con 0 errores y 0 warnings.
+- [x] `npm run test` con el 100% de tests en verde.
+- [x] `npm run build` ejecutado con éxito.
 
 ---
 

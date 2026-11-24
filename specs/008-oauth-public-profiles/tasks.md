@@ -79,7 +79,7 @@
   - Crear `src/pages/PublicProfilePage.test.tsx` cubriendo todos los estados (cargando, 404, privado, público completo y aislamiento de colecciones privadas).
   - Hecho cuando: `npm run test src/pages/PublicProfilePage.test.tsx src/App.test.tsx` pase al 100%.
 
-- [ ] **T6. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-02, RNF-03, RNF-04, RNF-05
+- [x] **T6. Puerta de calidad, verificación visual en Chrome DevTools MCP y memoria.** RNF-01, RNF-02, RNF-03, RNF-04, RNF-05
   - Ejecutar verificación estática completa: `npx tsc --noEmit` (cero errores, cero `any`), `npm run lint`, `npm run test` (suite completa) y `npm run build`.
   - Levantar `npm run dev` y validar con Chrome DevTools MCP en `http://localhost:5173/`:
     - Comprobar botones OAuth en `AuthDialog` con sus iconos y estados de carga.

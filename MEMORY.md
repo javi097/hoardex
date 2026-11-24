@@ -1,24 +1,23 @@
 # MEMORY.md — Hoardex
 
 ## Estado actual
-- **Proyecto completado al 100%:** Fases 1 a 5 (`001` a `007`) implementadas, probadas y listas para producción.
-- **Fase 5 (`007-wrapped-stats-deploy`):**
-  - Motor analítico `calculateWrappedStats` puro con filtros de año, completitud y top valorados.
-  - Generador social de texto con emojis y tarjeta vectorial temática `generateWrappedSvg` con `escapeXml`.
-  - Serializador RFC 4180 `exportToCsv` con BOM UTF-8 (`\uFEFF`) y helper de descarga `downloadCatalogCsv`.
-  - Modal interactivo accesible `WrappedDialog` con 6 diapositivas estilo Stories, teclado, swipe y reducción de movimiento.
-  - Integración de Wrapped accesible en `Header`, `AccountMenu` y `AchievementsPage`. Desbloqueo estacional (`isWrappedAvailable`) a partir del 10 de diciembre.
-  - Configuración Vercel (`vercel.json`), `.env.example`, metadatos SEO/Open Graph/Twitter Cards en `index.html`.
-- **Métricas globales:** 48 suites, 316 tests pasando (100% verde), 0 errores `tsc`, 0 `any` o `as any`, 0 warnings lint, build en 1.92s.
+- **Etapa 2 iniciada:** Spec 008 (`008-oauth-public-profiles`) implementada y validada al 100%. Preparada Spec 009 (`009-friends-social-feed`).
+- **Spec 008 (`008-oauth-public-profiles`):**
+  - Autenticación federada multi-proveedor (Google, Apple, GitHub) en `AuthDialog` con conciliación automática LWW al volver del callback OAuth.
+  - Perfil de usuario con `@username` alfanumérico sanitizado, `displayName`, `avatarUrl`, `bio` e iniciales de fallback (`UserAvatar`).
+  - Edición reactiva accesible en `ProfileSettingsDialog` con validación pura de username (`validateUsername`), aviso de rotura de enlaces y switch `isPublic`.
+  - Privacidad granular de colecciones (`isPublic` en `CollectionForm` y `CollectionCard` con candado accesible `Lock`).
+  - Ruta pública `/u/:username` (`PublicProfilePage`) con estados de carga, 404, privado, vista previa del dueño (CL-03) y vitrinas públicas de colecciones y logros, aislando datos privados y Wrapped.
+- **Métricas globales:** 57 suites, 380 tests pasando (100% verde), 0 errores `tsc`, 0 `any` o `as any`, 0 warnings lint, build limpio en dist/.
 
 ## Decisiones de arquitectura (y su porqué)
-- **Local-First & Resiliencia:** App 100% funcional sin conexión ni Supabase; respaldo en JSON versionado y CSV RFC 4180.
-- **Tarjetas SVG puras en cliente:** Generación vectorial ligera y nítida sin librerías pesadas (`html2canvas`).
-- **Reseteo de estado en render:** Control de diapositiva inicial en `WrappedDialog` derivando de props en render para evitar cascades de React.
-- **Conciliación LWW e idempotencia:** Fusión de datos remotos por `updatedAt`, XP por `Math.max` y unión de sets.
+- **Local-First & Privacidad:** Colecciones privadas (`is_public = false`) excluidas por RLS en Postgres y por filtros puros en cliente.
+- **Identidad no bloqueante:** La app funciona en modo invitado; al autenticarse, el trigger `handle_new_user` genera perfil y avatar automáticamente.
+- **Renderizado directo sin cascadas:** En `PublicProfilePage`, derivación de colecciones/logros directamente en render sin `useMemo` redundante para compatibilidad con el compilador de React.
+- **CL-03 (Dueño en perfil privado):** El propietario puede ver su propia página `/u/:user` aunque sea privada, con banner y botón de edición.
 
 ## Errores a evitar
-- **No importar stores dentro de otros stores:** Pasar datos por parámetro en acciones puras.
+- **No llamar a `clearProfile()` si `!isSupabaseConfigured`:** Solo limpiar el store de perfil si `!user` (cierre de sesión real).
+- **Evitar `asChild` en `@base-ui/react`:** Envolver botones en `<Link>` o estilizar enlaces directamente con `buttonVariants`.
 - **No llamar a `new Date()` sin parámetro en `core/`:** Inyectar siempre `targetYear` o `today`.
 - **Encadenar en PowerShell Windows:** Usar `;` en lugar de `&&`.
-- **Botones con nombres duplicados en Radix Dialog:** Nombrar de forma unívoca para evitar colisiones con el botón cerrar (`sr-only`).

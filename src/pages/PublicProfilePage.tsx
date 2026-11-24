@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import {
   ArrowLeft,
   Calendar,
+  CloudOff,
   EyeOff,
   Flame,
   Lock,
@@ -29,7 +30,7 @@ import { cn } from '@/lib/utils';
 
 export function PublicProfilePage() {
   const { username } = useParams<{ username: string }>();
-  const { isLoading, notFound, isPrivate, isOwner, data } = usePublicProfile(username);
+  const { isLoading, notFound, isPrivate, isOwner, error, data } = usePublicProfile(username);
 
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -158,7 +159,24 @@ export function PublicProfilePage() {
           />
         )}
 
-        {/* 4. Perfil Visible */}
+        {/* 4. Estado Sin Conexión o Error (RNF-01) */}
+        {!isLoading && !notFound && !isPrivate && !data && (
+          <EmptyState
+            icon={<CloudOff className="h-6 w-6 text-muted-foreground" aria-hidden="true" />}
+            title="Perfil no disponible sin conexión"
+            description={
+              error ??
+              'No es posible consultar el perfil público sin conexión a la base de datos remota.'
+            }
+            action={
+              <Link to="/">
+                <Button variant="outline">Volver al inicio</Button>
+              </Link>
+            }
+          />
+        )}
+
+        {/* 5. Perfil Visible */}
         {!isLoading && !notFound && !isPrivate && data && (
           <div className="space-y-8 animate-in fade-in-50 duration-200">
             {/* Banner de previsualización para el propietario si su perfil es privado (CL-03) */}
